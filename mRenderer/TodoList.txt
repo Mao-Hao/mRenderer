@@ -1,0 +1,8 @@
+
+一. 优化相关
+	1. zbuffer优化，二维数组变为一维 + memset ？
+	2. 二维数组的平铺
+	3. framebuffer优化，memset刷新颜色
+	4. 数据结构优化 三角形条带 / 扇区
+	5. 多线程优化 openmp
+
