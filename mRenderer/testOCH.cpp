@@ -22,6 +22,8 @@ int testOCH(int argc, char *argv[]) {
     mDevice::callbackfuncs.btnCallback    = OCBtnCallback;
     mDevice::callbackfuncs.scrollCallback = OCScrollCallback;
 
+    mDevice::mInitZbuffer();
+
     float prev = getNativeTime();
     while (true) {
         float curr = getNativeTime();
@@ -35,27 +37,50 @@ int testOCH(int argc, char *argv[]) {
 
         auto m = Mat::translate(0.0f,  0.0f,  0.0f) * camera.getViewMatrix() * camera.getProjMatrix();
 
-        auto p0 = Vec4f( 0.0f, -1.0f,  0.0f, 1.0f);
-        auto p1 = Vec4f(-1.0f,  0.75f, 0.0f, 1.0f);
-        auto p2 = Vec4f( 1.0f,  0.75f, 0.0f, 1.0f);
+        auto p0 = Vec4f(0.0f, 0.0f, 0.1f, 1.0f);
+        auto p1 = Vec4f(0.0f, 1.0f, 0.1f, 1.0f);
+        auto p2 = Vec4f(1.0f, 1.0f, 0.1f, 1.0f);
 
-        auto p0_ = Vec4f(p0 * m.col(0), p0 * m.col(1), p0 * m.col(2), p0 * m.col(3));
-        auto p1_ = Vec4f(p1 * m.col(0), p1 * m.col(1), p1 * m.col(2), p1 * m.col(3));
-        auto p2_ = Vec4f(p2 * m.col(0), p2 * m.col(1), p2 * m.col(2), p2 * m.col(3));
+        auto p3 = Vec4f(0.3f, 0.3f, 0.0f, 1.0f);
+        auto p4 = Vec4f(0.3f, 0.7f, 0.0f, 1.0f);
+        auto p5 = Vec4f(0.7f, 0.7f, 0.0f, 1.0f);
 
-        p0_ = p0_ / p0_.w;
-        p1_ = p1_ / p1_.w;
-        p2_ = p2_ / p2_.w;
+        Vec4xMat4(p0, m);   auto z0 = p0.z;
+        Vec4xMat4(p1, m);   auto z1 = p1.z;
+        Vec4xMat4(p2, m);   auto z2 = p2.z;
 
-        Vec2i a = NDC2Screen(p0_);
-        Vec2i b = NDC2Screen(p1_);
-        Vec2i c = NDC2Screen(p2_);
+        Vec4xMat4(p3, m);   auto z3 = p3.z;
+        Vec4xMat4(p4, m);   auto z4 = p4.z;
+        Vec4xMat4(p5, m);   auto z5 = p5.z;
 
-        mPoint2D A(a, Blue);
-        mPoint2D B(b, Green);
-        mPoint2D C(c, Red);
+        //if (!(mClip(p0))) {   
 
-        mTriangle(A, B, C);
+        p0 = p0 / p0.w;
+        p1 = p1 / p1.w;
+        p2 = p2 / p2.w;
+
+        p3 = p3 / p3.w;
+        p4 = p4 / p4.w;
+        p5 = p5 / p5.w;
+        p0.z = z0;
+        p1.z = z1;
+        p2.z = z2;
+
+        p3.z = z3;
+        p4.z = z4;
+        p5.z = z5;
+        mVertex a = {p0, Red};
+        mVertex b = {p1, Red};
+        mVertex c = {p2, Red};
+
+        mVertex d = {p3, Green};
+        mVertex e = {p4, Green};
+        mVertex f = {p5, Green};
+
+        mTriangleZ(a, b, c);
+        mTriangleZ(d, e, f);
+
+        mDevice::freshZBuffer();
 
         func();
 

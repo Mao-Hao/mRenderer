@@ -9,8 +9,8 @@ static struct Records {
     float deltaTime = 0;
 
     bool  isFstMouse = true;
-    float lastXPos = mDevice::width / 2;
-    float lastYPos = mDevice::height / 2;
+    float lastXPos = mDevice::width / 2.0f;
+    float lastYPos = mDevice::height / 2.0f;
 } record;
 
 

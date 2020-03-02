@@ -4,8 +4,7 @@
 #include "mMath.hpp"
 #include "mDevice.h"
 
-const float ZNear       =  0.1f;
-const float ZFar        =  100.0f;
+
 const float Fovy        =  mRadiansf(45.0f);
 const float Aspect      = (float)mDevice::width / mDevice::height;
 const float Yaw         = -90.0f;
@@ -49,10 +48,10 @@ public:
 
     void processKeyboard(KeyCode k, float deltaTime) {
         float velocity = movementSpeed * deltaTime;
-        if (k == KeyCode::W)        eye = eye + front * velocity;
-        if (k == KeyCode::S)        eye = eye - front * velocity;
-        if (k == KeyCode::A)        eye = eye - right * velocity;
-        if (k == KeyCode::D)        eye = eye + right * velocity;
+        if (k == KeyCode::W)        eye = eye + front * 30 * velocity;
+        if (k == KeyCode::S)        eye = eye - front * 30 * velocity;
+        if (k == KeyCode::A)        eye = eye - right * 30 * velocity;
+        if (k == KeyCode::D)        eye = eye + right * 30 * velocity;
 
     }
 

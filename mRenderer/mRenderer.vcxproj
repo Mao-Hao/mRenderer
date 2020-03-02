@@ -74,9 +74,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <ReferencePath>$(ReferencePath)</ReferencePath>
+    <IncludePath>$(IncludePath)</IncludePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\Personal\Final\mRenderer\include;$(IncludePath)</IncludePath>
+    <ReferencePath>C:\Personal\Final\mRenderer\mRenderer;$(ReferencePath)</ReferencePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -99,10 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Personal\Final\mRenderer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Personal\Final\mRenderer\assimp\debug64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -120,6 +128,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <Profile>true</Profile>
+      <AdditionalDependencies>assimp-vc142-mt.lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -130,6 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Personal\Final\mRenderer\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -137,6 +147,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <Profile>true</Profile>
+      <AdditionalDependencies>assimp-vc142-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Personal\Final\mRenderer\assimp\releasex64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -145,6 +157,10 @@
     </ClCompile>
     <ClCompile Include="mDevice.cpp" />
     <ClCompile Include="mFPSCameraHelper.cpp" />
+    <ClCompile Include="mModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="mOrbitalCamera.cpp" />
     <ClCompile Include="mOrbitalCameraHelper.cpp" />
     <ClCompile Include="mPaint.cpp" />
@@ -155,9 +171,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="testFPSH.cpp" />
+    <ClCompile Include="testNormal.cpp" />
     <ClCompile Include="testOCH.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="testTex.cpp" />
+    <ClCompile Include="testVS.cpp" />
     <ClCompile Include="win32.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -167,9 +186,12 @@
     <ClInclude Include="mColor.h" />
     <ClInclude Include="mDevice.h" />
     <ClInclude Include="mFPSCameraHelper.h" />
+    <ClInclude Include="mModel.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="mPaint.h" />
     <ClInclude Include="mPoint.h" />
-    <ClInclude Include="mShader.h" />
     <ClInclude Include="mBase.h" />
     <ClInclude Include="mMath.hpp" />
     <ClInclude Include="mOrbitalCamera.h">
@@ -180,9 +202,12 @@
     </ClInclude>
     <ClInclude Include="mVertex.h" />
     <ClInclude Include="testFPSH.h" />
+    <ClInclude Include="testNormal.h" />
     <ClInclude Include="testOCH.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="testTex.h" />
+    <ClInclude Include="testVS.h" />
     <ClInclude Include="win32.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>

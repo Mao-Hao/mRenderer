@@ -23,6 +23,8 @@ void mTriangleZ(mVertex & A, mVertex & B, mVertex & C);
 // true -> discard
 inline bool mClip(Vec4f v) {
     if (v.x < 0 || v.x > v.w || v.y < 0 || v.y > v.w || v.z < 0 || v.z > v.w)
+    //if (v.x < v.w || v.x > -v.w || v.y < v.w || v.y > -v.w || v.z < v.w || v.z > -v.w)
+    //if (v.z < 0 || v.z > v.w)
         return true;
     return false;
 }

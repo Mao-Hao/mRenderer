@@ -146,6 +146,7 @@ void mTriangleZ(mVertex & A, mVertex & B, mVertex & C) {
                     (beta  > 0 || Fbeta  * F(c, a, -1, -1)) && 
                     (gamma > 0 || Fgamma * F(a, b, -1, -1))) { 
                     z = A.p.z * alpha + B.p.z * beta + C.p.z * gamma;
+                    z = (1.0f / z - invZNear) / (invDZFN);
                     if (mDevice::mZTest(x, y, z)) {
                         mc = A.mc * alpha + B.mc * beta + C.mc * gamma; 
                         mDevice::setPixel(x, y, mc);

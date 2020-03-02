@@ -3,6 +3,13 @@
 #include "mColor.h"
 #include <functional>
 
+const float ZNear       =   0.1f;
+const float invZNear    =   1.0f / ZNear;
+const float ZFar        =   100.0f;
+const float invZFar     =   1.0f / ZFar;
+const float invDZFN      =   1 / (invZFar - invZNear);
+
+
 enum class KeyCode {
     A, D, E, Q, S, W, SPACE, ESC, KEY_NUM
 };
@@ -37,14 +44,16 @@ public:
 
     // inline
     static __forceinline void setPixel(int x, int y, mColor c) {
-        mAssert(x >= 0); mAssert(x < width);
-        mAssert(y >= 0); mAssert(y < height);
-        framebuffer[y][x] = toRawColor(c);
+        //mAssert(x >= 0); mAssert(x < width);
+        //mAssert(y >= 0); mAssert(y < height);
+        if (x >= 0 && x < width && y >= 0 && y < height)
+            framebuffer[y][x] = toRawColor(c);
     }
     static void setPixel_rc(int x, int y, rawColor c = 0xffffff) {
-        mAssert(x >= 0); mAssert(x < width);
-        mAssert(y >= 0); mAssert(y < height);
-        framebuffer[y][x] = c;
+        //mAssert(x >= 0); mAssert(x < width);
+        //mAssert(y >= 0); mAssert(y < height);
+        if (x >= 0 && x < width && y >= 0 && y < height)
+            framebuffer[y][x] = c;
     }
     static mColor getColor(int x, int y) {
         mAssert(x >= 0); mAssert(x < width);
@@ -73,7 +82,7 @@ public:
     }
     // z越小，离摄像机越近 大的z表示该物体在前面 false -> discard
     static __forceinline bool mZTest(int x, int y, float & z) {
-        if (z - mDevice::zbuffer[y][x] > -0.01f) {
+        if (z - mDevice::zbuffer[y][x] > 0.0f) {
             mDevice::zbuffer[y][x] = z;
             return true;        // 绘制该点
         }

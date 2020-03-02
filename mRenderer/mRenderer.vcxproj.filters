@@ -39,9 +39,6 @@
     <ClInclude Include="win32.h">
       <Filter>win</Filter>
     </ClInclude>
-    <ClInclude Include="mShader.h">
-      <Filter>shader</Filter>
-    </ClInclude>
     <ClInclude Include="testOCH.h">
       <Filter>testCases</Filter>
     </ClInclude>
@@ -72,14 +69,26 @@
     <ClInclude Include="mPoint.h">
       <Filter>base\header</Filter>
     </ClInclude>
-    <ClInclude Include="mVertex.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="mFPSCamera.h">
       <Filter>camera</Filter>
     </ClInclude>
     <ClInclude Include="mFPSCameraHelper.h">
       <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="testVS.h">
+      <Filter>testCases</Filter>
+    </ClInclude>
+    <ClInclude Include="mVertex.h">
+      <Filter>base\header</Filter>
+    </ClInclude>
+    <ClInclude Include="testNormal.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="testTex.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="mModel.h">
+      <Filter>base\header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -111,6 +120,18 @@
       <Filter>base\src</Filter>
     </ClCompile>
     <ClCompile Include="mPaint.cpp">
+      <Filter>base\src</Filter>
+    </ClCompile>
+    <ClCompile Include="testVS.cpp">
+      <Filter>testCases</Filter>
+    </ClCompile>
+    <ClCompile Include="testNormal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="testTex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mModel.cpp">
       <Filter>base\src</Filter>
     </ClCompile>
   </ItemGroup>

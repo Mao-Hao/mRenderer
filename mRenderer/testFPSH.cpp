@@ -37,13 +37,13 @@ int testFPSH(int argc, char * argv[])
 
         auto m = Mat::translate(0.0f,  0.0f,  0.0f) * camera.getViewMatrix() * camera.getProjMatrix();
 
-        auto p0 = Vec4f(0.0f, 0.0f, 0.1f, 1.0f);
-        auto p1 = Vec4f(0.0f, 1.0f, 0.1f, 1.0f);
-        auto p2 = Vec4f(1.0f, 1.0f, 0.1f, 1.0f);
+        auto p0 = Vec4f(0.0f, 0.0f, 0.5f, 1.0f);
+        auto p1 = Vec4f(0.0f, 1.0f, 0.49f, 1.0f);
+        auto p2 = Vec4f(1.0f, 1.0f, 0.49f, 1.0f);
 
-        auto p3 = Vec4f(0.3f, 0.3f, 0.0f, 1.0f);
-        auto p4 = Vec4f(0.3f, 0.7f, 0.0f, 1.0f);
-        auto p5 = Vec4f(0.7f, 0.7f, 0.0f, 1.0f);
+        auto p3 = Vec4f(0.0f, 0.0f, 0.49f, 1.0f);
+        auto p4 = Vec4f(0.0f, 1.0f, 0.5f, 1.0f);
+        auto p5 = Vec4f(1.0f, 1.0f, 0.5f, 1.0f);
 
         Vec4xMat4(p0, m);   auto z0 = p0.z;
         Vec4xMat4(p1, m);   auto z1 = p1.z;
@@ -52,36 +52,33 @@ int testFPSH(int argc, char * argv[])
         Vec4xMat4(p3, m);   auto z3 = p3.z;
         Vec4xMat4(p4, m);   auto z4 = p4.z;
         Vec4xMat4(p5, m);   auto z5 = p5.z;
-
-        //if (!(mClip(p0))) {   
+        cout << "p0 " << p0 << '\n';
+        cout << "p1 " << p1 << '\n';
+        if (!(mClip(p0))) {   
 
             p0 = p0 / p0.w;
             p1 = p1 / p1.w;
             p2 = p2 / p2.w;
+            cout << "p0 " << p0 << '\n';
+            cout << "p1 " << p1 << '\n';
 
             p3 = p3 / p3.w;
             p4 = p4 / p4.w;
             p5 = p5 / p5.w;
-            p0.z = z0;
-            p1.z = z1;
-            p2.z = z2;
 
-            p3.z = z3;
-            p4.z = z4;
-            p5.z = z5;
-            mVertex a = {p0, Red};
-            mVertex b = {p1, Red};
-            mVertex c = {p2, Red};
+            mVertex a = {p0, Blue};
+            mVertex b = {p1, Blue};
+            mVertex c = {p2, Blue};
 
             mVertex d = {p3, Green};
             mVertex e = {p4, Green};
             mVertex f = {p5, Green};
 
-            mTriangleZ(a, b, c);
             mTriangleZ(d, e, f);
+            mTriangleZ(a, b, c);
 
             mDevice::freshZBuffer();
-        //}
+        }
         mDispatch();
         mUpdateWindow();
     }
