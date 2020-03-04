@@ -90,6 +90,9 @@
     <ClInclude Include="mModel.h">
       <Filter>base\header</Filter>
     </ClInclude>
+    <ClInclude Include="mShader.h">
+      <Filter>shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="testcam.cpp">

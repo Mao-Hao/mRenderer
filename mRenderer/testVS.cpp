@@ -8,91 +8,14 @@
 #include "mFPSCamera.h"
 #include "mFPSCameraHelper.h"
 #include "testVS.h"
+#include "mModel.h"
+#include "mShader.h"
 
-float vertices[108] = {
-    0.25f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.75f,
-    0.25f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.75f,
-    0.25f, 0.75f, 0.75f,
+using std::vector;
 
-    0.75f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.75f,
-    0.25f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.75f,
-
-    0.25f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.25f,
-
-    0.25f, 0.25f, 0.75f,
-    0.25f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.75f,
-    0.25f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.75f,
-
-    0.75f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.75f,
-
-    0.25f, 0.75f, 0.75f,
-    0.75f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.25f,
-    0.25f, 0.25f, 0.75f,
-    0.25f, 0.75f, 0.25f,
-    0.75f, 0.25f, 0.75f
-};
-
-struct Attrib {
-    Vec3f position;
-    Vec3f texcoord;
-    Vec3f normal;
-};
-
-struct Uniform {
-    Mat     model;
-    Mat     view;
-    Mat     proj;
-    Vec3f   cameraPos;
-};
-
-struct Varyings {
-
-};
-
-class MyClass
-{
-public:
-    MyClass();
-    ~MyClass();
-
-private:
-
-};
-
-MyClass::MyClass()
-{
+static inline Vec2i NDC2Screen(Vec4f & p) {
+    return Vec2i((p.x) * (mDevice::width), (p.y) * (mDevice::height));
 }
-
-MyClass::~MyClass()
-{
-}
-
-
-Vec4f mVertexShader(_In_ Attrib & attrib, _In_ Uniform & uniform) {//, _Out_ Varyings & varyings) {
-    return Vec4f();
-};
-
 
 int testVS(int argc, char * argv[])
 {
@@ -104,6 +27,13 @@ int testVS(int argc, char * argv[])
     mDevice::callbackfuncs.scrollCallback = FPSCScrollCallback;
     mDevice::mInitZbuffer();
 
+    mShader shader;
+
+    vector<mModel> models;
+    //models.push_back(mModel("obj/african_head/african_head.obj"));
+    models.push_back(mModel("obj/assassin/hair.obj", 0.01f));
+    models.push_back(mModel("obj/assassin/face.obj", 0.01f));
+    models.push_back(mModel("obj/assassin/body.obj", 0.01f));
     float prev = getNativeTime();
     while (!mDevice::isKeyPressed(KeyCode::ESC)) {
         float curr = getNativeTime();
@@ -114,18 +44,15 @@ int testVS(int argc, char * argv[])
         for (size_t i = 0; i<mDevice::width; i++)
             for (size_t j = 0;j<mDevice::height; j++)
                 mDevice::setPixel_rc(i, j, 0);
-
         //--beg--
-
-
-
-
-
-
-
-
+        shader.setMatrix(Mat::translate(0.0f, 0.0f, 0.0f), camera.getViewMatrix(), camera.getProjMatrix());
+        for (auto & model : models) {
+            shader.setModel(&model);
+            for (size_t i = 0; i != model.facesSize(); i++) {
+                shader.VertexShader(i);
+            } 
+        }
         //--end--
-
         mDevice::freshZBuffer();
         mDispatch();
         mUpdateWindow();

@@ -200,6 +200,7 @@
     <ClInclude Include="mOrbitalCameraHelper.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="mShader.h" />
     <ClInclude Include="mVertex.h" />
     <ClInclude Include="testFPSH.h" />
     <ClInclude Include="testNormal.h" />

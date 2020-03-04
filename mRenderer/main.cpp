@@ -23,8 +23,7 @@ unordered_map<string, function<int(int, char*[])>> testCase = {
 
 int main(int argc, char *argv[]) 
 {
-    auto testFunc = testCase.at("Texture");
-    //auto testFunc = testCase.at("FPSCamera");
+    auto testFunc = testCase.at("VertexShader");
     testFunc(argc, argv);
 
     return 0;
