@@ -10,12 +10,9 @@
 #include "testVS.h"
 #include "mModel.h"
 #include "mShader.h"
+#include "mPaint.h"
 
 using std::vector;
-
-static inline Vec2i NDC2Screen(Vec4f & p) {
-    return Vec2i((p.x) * (mDevice::width), (p.y) * (mDevice::height));
-}
 
 int testVS(int argc, char * argv[])
 {
@@ -31,25 +28,34 @@ int testVS(int argc, char * argv[])
 
     vector<mModel> models;
     //models.push_back(mModel("obj/african_head/african_head.obj"));
+    //models.push_back(mModel("obj/african_head/african_head_eye_inner.obj"));
+    //models.push_back(mModel("obj/african_head/african_head_eye_outer.obj"));
+    //models.push_back(mModel("obj/diablo3_pose/diablo3_pose.obj"));
     models.push_back(mModel("obj/assassin/hair.obj", 0.01f));
     models.push_back(mModel("obj/assassin/face.obj", 0.01f));
     models.push_back(mModel("obj/assassin/body.obj", 0.01f));
-    float prev = getNativeTime();
+    models.push_back(mModel("obj/assassin/weapon.obj", 0.01f));
+    float prev = (float)getNativeTime();
     while (!mDevice::isKeyPressed(KeyCode::ESC)) {
-        float curr = getNativeTime();
-        cout << (curr - prev) * 1000 << '\n';
+        float curr = (float)getNativeTime();
+        //cout << (curr - prev) * 1000 << '\n';
         setRecordsTime(prev, curr);
         prev = curr;
 
-        for (size_t i = 0; i<mDevice::width; i++)
-            for (size_t j = 0;j<mDevice::height; j++)
+        for (int i = 0; i < mDevice::width; i++)
+            for (int j = 0; j < mDevice::height; j++)
                 mDevice::setPixel_rc(i, j, 0);
         //--beg--
-        shader.setMatrix(Mat::translate(0.0f, 0.0f, 0.0f), camera.getViewMatrix(), camera.getProjMatrix());
+        shader.setMatrix(
+            Mat::rotate_y(mRadiansf(180)) * Mat::translate(1, 1, 0), 
+            camera.getViewMatrix(), 
+            camera.getProjMatrix()
+        );
         for (auto & model : models) {
             shader.setModel(&model);
             for (size_t i = 0; i != model.facesSize(); i++) {
-                shader.VertexShader(i);
+                mRasterize(shader, i);
+
             } 
         }
         //--end--

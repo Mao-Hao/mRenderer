@@ -1,7 +1,7 @@
 #include "mPaint.h"
 #include "mDevice.h"
 
-static inline Vec2i NDC2Screen(Vec3f & p) {
+static inline Vec2i NDC2Screen(Vec3f p) {
     return Vec2i((p.x) * mDevice::width, (p.y) * mDevice::height);
 }
 
@@ -156,3 +156,59 @@ void mTriangleZ(mVertex & A, mVertex & B, mVertex & C) {
         }
 #undef F(A, B, X, Y)
 }
+
+
+
+void mRasterize(mShader & shader, int faceIndex) {
+    shader.VertexShader(faceIndex);
+    // 注意 invW
+    if (!mClip(shader.vertices[0]) && !mClip(shader.vertices[1]) && !mClip(shader.vertices[2])) {
+        shader.vertices[0] = shader.vertices[0] / shader.vertices[0].w;
+        shader.vertices[1] = shader.vertices[1] / shader.vertices[1].w;
+        shader.vertices[2] = shader.vertices[2] / shader.vertices[2].w;
+
+        Vec2i a = NDC2Screen(embed<3>(shader.vertices[0]));
+        Vec2i b = NDC2Screen(embed<3>(shader.vertices[1]));
+        Vec2i c = NDC2Screen(embed<3>(shader.vertices[2]));
+
+        if (a.y == b.y && a.y == c.y)   return;     // 退化三角形
+        // 包围盒 max, min 
+        int xmin = mMax(0, mMin3(a.x, b.x, c.x));   
+        int ymin = mMax(0, mMin3(a.y, b.y, c.y));    
+        int xmax = mMin(mDevice::width,  mMax3(a.x, b.x, c.x));
+        int ymax = mMin(mDevice::height, mMax3(a.y, b.y, c.y));
+
+        // 注意带参宏的展开方式，若前有参数 x，则每个 x 都会被识别为参数
+#define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
+        float Falpha = F(b, c, a.x, a.y);
+        float Fbeta  = F(c, a, b.x, b.y);
+        float Fgamma = F(a, b, c.x, c.y);
+        float alpha, beta, gamma, z;
+        mColor mc = White;
+        for (int y = ymin; y < ymax; y++)
+            for (int x = xmin; x < xmax; x++) {
+                alpha = F(b, c, x, y) / Falpha;
+                if (alpha < 0)  continue;
+                beta  = F(c, a, x, y) / Fbeta;
+                //gamma = 1 - alpha - beta; // 存在误差
+                gamma = F(a, b, x, y) / Fgamma;
+                // 改为 < 和 || continue 更好
+                if (alpha >= 0 && beta >= 0 && gamma >= 0) {
+                    if ((alpha > 0 || Falpha * F(b, c, -1, -1)) && 
+                        (beta  > 0 || Fbeta  * F(c, a, -1, -1)) && 
+                        (gamma > 0 || Fgamma * F(a, b, -1, -1))) { 
+                        z = shader.vertices[0].z * alpha + shader.vertices[1].z * beta + shader.vertices[2].z * gamma;
+                        z = (1.0f / z - invZNear) / (invDZFN);
+                        if (mDevice::mZTest(x, y, z)) {
+                            shader.FrameShader({alpha, beta, gamma}, mc); 
+                            mDevice::setPixel(x, y, mc);
+                        }
+                    }
+                }
+            }
+#undef F(A, B, X, Y)
+
+
+    }
+}
+

@@ -81,17 +81,20 @@
     <ClInclude Include="mVertex.h">
       <Filter>base\header</Filter>
     </ClInclude>
-    <ClInclude Include="testNormal.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="testTex.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="mModel.h">
       <Filter>base\header</Filter>
     </ClInclude>
     <ClInclude Include="mShader.h">
       <Filter>shader</Filter>
+    </ClInclude>
+    <ClInclude Include="mTexture.h">
+      <Filter>base\header</Filter>
+    </ClInclude>
+    <ClInclude Include="testTex.h">
+      <Filter>testCases</Filter>
+    </ClInclude>
+    <ClInclude Include="testNormal.h">
+      <Filter>testCases</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +138,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mModel.cpp">
+      <Filter>base\src</Filter>
+    </ClCompile>
+    <ClCompile Include="mTexture.cpp">
       <Filter>base\src</Filter>
     </ClCompile>
   </ItemGroup>

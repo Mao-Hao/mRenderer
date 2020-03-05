@@ -96,7 +96,7 @@ int mInitWindow() {
     memory_dc = CreateCompatibleDC(hdc1);    // ´´½¨ÐÂ¾ä±ú0
     ReleaseDC(hwnd, hdc1);
 
-    BITMAPINFO bitmapinfo = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB, w * h * 4, 0, 0, 0, 0 } };
+    BITMAPINFO bitmapinfo = { { sizeof(BITMAPINFOHEADER), w, -h, 1, 32, BI_RGB, DWORD(w * h * 4), 0, 0, 0, 0 } };
     bitmap0 = CreateDIBSection(memory_dc, &bitmapinfo, DIB_RGB_COLORS, _Out_ &ptr, 0, 0);
     if (bitmap0 == NULL)      return -3;
 

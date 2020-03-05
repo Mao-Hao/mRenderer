@@ -140,10 +140,10 @@ template<size_t DIM, typename T, typename U> vec<DIM, T> operator/(vec<DIM, T> l
     return lhs;
 }
 
-// TODO
+// 
 template<size_t LEN,size_t DIM,typename T> vec<LEN,T> embed(const vec<DIM,T> &v, T fill=1) {
     vec<LEN,T> ret;
-    for (size_t i=LEN; i--; ret[i]=(i<DIM?v[i]:fill));
+    for (size_t i=LEN; i--; ret[i]= (i < DIM ? v[i] : fill));
     return ret;
 }
 

@@ -10,6 +10,7 @@ using std::cout;
 
 using uchar     = unsigned char;
 using uint      = unsigned int;
+using ulong     = unsigned long;
 using rawColor  = uint;             // 4×Ö½Ú
 
 //#define mNDebug

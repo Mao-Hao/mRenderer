@@ -44,7 +44,7 @@ public:
     // ! 必须加， 不加移动会歪
     Mat getViewMatrix() { return Mat::lookAt(eye, eye + front, up);}
 
-    Mat getProjMatrix() { return Mat::perspective((Fovy), Aspect, ZNear, ZFar);}
+    Mat getProjMatrix() { return Mat::perspective(mRadiansf(zoom), Aspect, ZNear, ZFar);}
 
     void processKeyboard(KeyCode k, float deltaTime) {
         float velocity = movementSpeed * deltaTime;
@@ -68,8 +68,8 @@ public:
     }
 
     void processMouseScroll(float yOffset) {
-        if (zoom >= 1.0f && zoom <= 45.0f)  zoom -= yOffset;
-        zoom = mClamp(zoom, 1.0f, 45.0f);
+        if (zoom >= 1.0f && zoom <= 60.0f)  zoom -= yOffset;
+        zoom = mClamp(zoom, 1.0f, 60.0f);
     }
 
 private:

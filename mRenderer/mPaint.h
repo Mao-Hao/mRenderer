@@ -4,6 +4,7 @@
 #include "mColor.h"
 #include "mPoint.h"
 #include "mVertex.h"
+#include "mShader.h"
 
 // bresenham
 // 实际是绘制 p0 to p1 - (1, 1)的线
@@ -19,6 +20,8 @@ void triangle(mPoint2D & A, mPoint2D & B, mPoint2D & C);
 void mTriangle(mPoint2D & A, mPoint2D & B, mPoint2D & C);
 
 void mTriangleZ(mVertex & A, mVertex & B, mVertex & C);
+
+void mRasterize(mShader & shader, int faceIndex);
 
 // true -> discard
 inline bool mClip(Vec4f v) {

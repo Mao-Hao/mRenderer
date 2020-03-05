@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include "mModel.h"
-
 using namespace std;
 
 mModel::mModel(const char * path, float sz) {
@@ -44,9 +43,21 @@ mModel::mModel(const char * path, float sz) {
             faces.push_back(f);
         }
     }
+    loadTexture(path, "_basecolor.tga", diffuseMap);
+
 }
 
 mModel::~mModel() {}
+
+void mModel::loadTexture(const char * path, const char * suffix, mTGATexture & tex) {
+    string texfile(path);
+    size_t dot = texfile.find_last_of(".");
+    if (dot != string::npos) {
+        texfile = texfile.substr(0,dot) + string(suffix);
+        cerr << "texture file " << texfile << " loading " << (tex.loadTGAImage(texfile.c_str()) ? "ok" : "failed") << endl;
+
+    }
+}
 
 int mModel::vertSize() {
     return (int)vertices.size();
@@ -68,16 +79,29 @@ Vec4f mModel::getVertex(int faceIndex, int vertIndex) {
                  (vertices[faces[faceIndex][vertIndex][0]].z + 1.0f) * 0.5f, 1.0f);
 }
 
-vector<int> mModel::getFace(int index) {
-    vector<int> face;
-    for (int i = 0; i < (int)faces[index].size(); i++) 
-        face.push_back(faces[index][i][0]);
-    return face;
-}
-
-std::array<int, 3> mModel::getFace3(int index) {
-    array<int, 3> face;
+std::array<int, 3> mModel::getFace(int index) {
+    array<int, 3> face = {0};
     for (int i = 0; i < (int)faces[index].size(); i++) 
         face[i] = faces[index][i][0];
     return face;
+}
+
+Vec2f mModel::getTexcoord(int faceIndex, int vertIndex) {
+    return texcoord[faces[faceIndex][vertIndex][1]];
+}
+
+Vec3f mModel::getNormal(int faceIndex, int vertIndex) {
+    int index = faces[faceIndex][vertIndex][2];
+    return normals[index].normalize();
+}
+
+Vec3f mModel::getNormal(Vec2f _texcoord) {
+    // TODO
+    return Vec3f();
+}
+
+mColor mModel::diffuse(Vec2f _uv) {
+    Vec2i uv(_uv[0] * diffuseMap.width, _uv[1] * diffuseMap.height);
+    auto color = diffuseMap.getColor(uv[0], uv[1]);
+    return {color.x, color.y, color.z};
 }
