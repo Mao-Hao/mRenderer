@@ -43,8 +43,8 @@ mModel::mModel(const char * path, float sz) {
             faces.push_back(f);
         }
     }
-    loadTexture(path, "_basecolor.tga", diffuseMap);
-
+    loadTexture(path, "_diffuse.tga", diffuseMap);
+    //loadTexture(path, "_basecolor.tga", diffuseMap);
 }
 
 mModel::~mModel() {}
@@ -55,7 +55,7 @@ void mModel::loadTexture(const char * path, const char * suffix, mTGATexture & t
     if (dot != string::npos) {
         texfile = texfile.substr(0,dot) + string(suffix);
         cerr << "texture file " << texfile << " loading " << (tex.loadTGAImage(texfile.c_str()) ? "ok" : "failed") << endl;
-
+        //tex.flip_vertically();
     }
 }
 
@@ -68,15 +68,15 @@ int mModel::facesSize() {
 }
 
 Vec4f mModel::getVertex(int index) {
-    return Vec4f((vertices[index].x + 1.0f) * 0.5f,
-                -(vertices[index].y + 1.0f) * 0.5f,
-                 (vertices[index].z + 1.0f) * 0.5f, 1.0f);
+    return Vec4f((vertices[index].x ) ,
+                -(vertices[index].y ) ,
+                 (vertices[index].z ) , 1.0f);
 }
 
 Vec4f mModel::getVertex(int faceIndex, int vertIndex) {
-    return Vec4f((vertices[faces[faceIndex][vertIndex][0]].x + 1.0f) * 0.5f,
-                -(vertices[faces[faceIndex][vertIndex][0]].y + 1.0f) * 0.5f,
-                 (vertices[faces[faceIndex][vertIndex][0]].z + 1.0f) * 0.5f, 1.0f);
+    return Vec4f((vertices[faces[faceIndex][vertIndex][0]].x ),
+                -(vertices[faces[faceIndex][vertIndex][0]].y ),
+                 (vertices[faces[faceIndex][vertIndex][0]].z ), 1.0f);
 }
 
 std::array<int, 3> mModel::getFace(int index) {

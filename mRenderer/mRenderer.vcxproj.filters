@@ -39,18 +39,6 @@
     <ClInclude Include="win32.h">
       <Filter>win</Filter>
     </ClInclude>
-    <ClInclude Include="testOCH.h">
-      <Filter>testCases</Filter>
-    </ClInclude>
-    <ClInclude Include="mOrbitalCameraHelper.h">
-      <Filter>helper</Filter>
-    </ClInclude>
-    <ClInclude Include="mOrbitalCamera.h">
-      <Filter>camera</Filter>
-    </ClInclude>
-    <ClInclude Include="testFPSH.h">
-      <Filter>testCases</Filter>
-    </ClInclude>
     <ClInclude Include="mBase.h">
       <Filter>base\header</Filter>
     </ClInclude>
@@ -90,37 +78,16 @@
     <ClInclude Include="mTexture.h">
       <Filter>base\header</Filter>
     </ClInclude>
-    <ClInclude Include="testTex.h">
-      <Filter>testCases</Filter>
-    </ClInclude>
     <ClInclude Include="testNormal.h">
       <Filter>testCases</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="testcam.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="testOCH.cpp">
-      <Filter>testCases</Filter>
-    </ClCompile>
     <ClCompile Include="win32.cpp">
       <Filter>win</Filter>
-    </ClCompile>
-    <ClCompile Include="mOrbitalCameraHelper.cpp">
-      <Filter>helper</Filter>
-    </ClCompile>
-    <ClCompile Include="mOrbitalCamera.cpp">
-      <Filter>camera</Filter>
-    </ClCompile>
-    <ClCompile Include="testFPSH.cpp">
-      <Filter>testCases</Filter>
-    </ClCompile>
-    <ClCompile Include="mFPSCameraHelper.cpp">
-      <Filter>camera</Filter>
     </ClCompile>
     <ClCompile Include="mDevice.cpp">
       <Filter>base\src</Filter>
@@ -131,17 +98,17 @@
     <ClCompile Include="testVS.cpp">
       <Filter>testCases</Filter>
     </ClCompile>
-    <ClCompile Include="testNormal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="testTex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mModel.cpp">
       <Filter>base\src</Filter>
     </ClCompile>
     <ClCompile Include="mTexture.cpp">
       <Filter>base\src</Filter>
+    </ClCompile>
+    <ClCompile Include="mFPSCameraHelper.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="testNormal.cpp">
+      <Filter>testCases</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

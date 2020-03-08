@@ -9,156 +9,185 @@
 // Cpp Style
 
 const float Epsilon = 1e-6f;
-const float Pi      = 3.1415926535f;
-const float HalfPi  = 1.5707963267f;
+const float Pi = 3.1415926535f;
+const float HalfPi = 1.5707963267f;
 //--------------------------------------------------------------------------------------
 // 以下全是Vec
 //--------------------------------------------------------------------------------------
 // Vec
-template <size_t DIM, typename T> struct vec {
-    vec() { for (size_t i = DIM; i--; data_[i] = T()); }
-          T& operator[](const size_t i)       { mAssert(i < DIM); return data_[i]; }
-    const T& operator[](const size_t i) const { mAssert(i < DIM); return data_[i]; }
+template <size_t DIM, typename T> struct vec
+{
+    vec() { for ( size_t i = DIM; i--; data_[i] = T() ); }
+    T & operator[]( const size_t i ) { mAssert( i < DIM ); return data_[i]; }
+    const T & operator[]( const size_t i ) const { mAssert( i < DIM ); return data_[i]; }
 private:
     T data_[DIM];
 };
 
 //--------------------------------------------------------------------------------------
 // vec偏特化 Vec2i/f
-template <typename T> struct vec<2, T> {
-    vec() : x(T()), y(T()) {}
-    vec(T X, T Y) : x(X), y(Y) {}
+template <typename T> struct vec<2, T>
+{
+    vec() : x( T() ), y( T() ) {}
+    vec( T X, T Y ) : x( X ), y( Y ) {}
     // 类型转换
-    template <class U> vec<2, T>(const vec<2, U> &v);
-          T& operator[](const size_t i)       { mAssert(i < 2); return i <= 0 ? x : y; }
-    const T& operator[](const size_t i) const { mAssert(i < 2); return i <= 0 ? x : y; }
+    template <class U> vec<2, T>( const vec<2, U> & v );
+    T & operator[]( const size_t i ) { mAssert( i < 2 ); return i <= 0 ? x : y; }
+    const T & operator[]( const size_t i ) const { mAssert( i < 2 ); return i <= 0 ? x : y; }
 
-    float norm() { return std::sqrtf(x * x + y * y); }
-    vec<2, T> & normalize(T l = 1) { 
+    float norm() { return std::sqrtf( x * x + y * y ); }
+    vec<2, T> & normalize( T l = 1 )
+    {
         float n = norm();
-        if (n == 0)     return *this;
-        *this = (*this) * (l / n); 
+        if ( n == 0 )     return *this;
+        *this = ( *this ) * ( l / n );
         return *this;
     }
 
     T x, y;
 };
 
-template <> template <> inline vec<2, int>  ::vec(const vec<2, float> &v) 
-    : x(int(v.x + .5f)), y(int(v.y + .5f)) {}
-template <> template <> inline vec<2, float>::vec(const vec<2, int> &v)   
-    : x(v.x), y(v.y) {}
+template <> template <> inline vec<2, int>  ::vec( const vec<2, float> & v )
+    : x( int( v.x + .5f ) ), y( int( v.y + .5f ) )
+{
+}
+template <> template <> inline vec<2, float>::vec( const vec<2, int> & v )
+    : x( v.x ), y( v.y )
+{
+}
 
 
 //--------------------------------------------------------------------------------------
 // vec偏特化 Vec3i/f
-template <typename T> struct vec<3, T> {
-    vec() : x(T()), y(T()), z(T()) {}
-    vec(T X, T Y, T Z) : x(X), y(Y), z(Z) {}
+template <typename T> struct vec<3, T>
+{
+    vec() : x( T() ), y( T() ), z( T() ) {}
+    vec( T X, T Y, T Z ) : x( X ), y( Y ), z( Z ) {}
     // 类型转换
-    template <class U> vec<3, T>(const vec<3, U> &v);
-          T& operator[](const size_t i)       { mAssert(i < 3); return i <= 0 ? x : (1 == i ? y : z); }
-    const T& operator[](const size_t i) const { mAssert(i < 3); return i <= 0 ? x : (1 == i ? y : z); }
+    template <class U> vec<3, T>( const vec<3, U> & v );
+    T & operator[]( const size_t i ) { mAssert( i < 3 ); return i <= 0 ? x : ( 1 == i ? y : z ); }
+    const T & operator[]( const size_t i ) const { mAssert( i < 3 ); return i <= 0 ? x : ( 1 == i ? y : z ); }
 
-    float norm() { return std::sqrtf(x * x + y * y + z * z); }
-    vec<3, T> & normalize(T l = 1) {
+    float norm() { return std::sqrtf( x * x + y * y + z * z ); }
+    vec<3, T> & normalize( T l = 1 )
+    {
         float n = norm();
-        if (n == 0)     return *this;
-        *this = (*this) * (l / n); 
-        return *this; 
+        if ( n == 0 )     return *this;
+        *this = ( *this ) * ( l / n );
+        return *this;
     }
 
     T x, y, z;
 };
 
-template <> template <> inline vec<3, int>  ::vec(const vec<3, float> &v) 
-    : x(int(v.x + .5f)), y(int(v.y + .5f)), z(int(v.z + .5f)) {}
-template <> template <> inline vec<3, float>::vec(const vec<3, int> &v)   
-    : x(v.x), y(v.y), z(v.z) {}
+template <> template <> inline vec<3, int>  ::vec( const vec<3, float> & v )
+    : x( int( v.x + .5f ) ), y( int( v.y + .5f ) ), z( int( v.z + .5f ) )
+{
+}
+template <> template <> inline vec<3, float>::vec( const vec<3, int> & v )
+    : x( v.x ), y( v.y ), z( v.z )
+{
+}
 
 //--------------------------------------------------------------------------------------
 // vec偏特化 Vec4i/f
-template <typename T> struct vec<4, T> {
-    vec() : x(T()), y(T()), z(T()), w(T()) {}
-    vec(T X, T Y, T Z, T W) : x(X), y(Y), z(Z), w(W) {}
+template <typename T> struct vec<4, T>
+{
+    vec() : x( T() ), y( T() ), z( T() ), w( T() ) {}
+    vec( T X, T Y, T Z, T W ) : x( X ), y( Y ), z( Z ), w( W ) {}
     // 类型转换
-    template <class U> vec<4, T>(const vec<4, U> &v);
-    T& operator[](const size_t i)       { mAssert(i < 4); return i <= 0 ? x : (1 == i ? y : (2 == i ? z : w)) ; }
-    const T& operator[](const size_t i) const { mAssert(i < 4); return i <= 0 ? x : (1 == i ? y : (2 == i ? z : w)); }
+    template <class U> vec<4, T>( const vec<4, U> & v );
+    T & operator[]( const size_t i ) { mAssert( i < 4 ); return i <= 0 ? x : ( 1 == i ? y : ( 2 == i ? z : w ) ); }
+    const T & operator[]( const size_t i ) const { mAssert( i < 4 ); return i <= 0 ? x : ( 1 == i ? y : ( 2 == i ? z : w ) ); }
 
-    float norm() { return std::sqrtf(x * x + y * y + z * z + w * w); }
-    vec<4, T> & normalize(T l = 1) { 
+    float norm() { return std::sqrtf( x * x + y * y + z * z + w * w ); }
+    vec<4, T> & normalize( T l = 1 )
+    {
         float n = norm();
-        if (n == 0)     return *this;
-        *this = (*this) * (l / n); 
-        return *this; 
+        if ( n == 0 )     return *this;
+        *this = ( *this ) * ( l / n );
+        return *this;
     }
 
     T x, y, z, w;
 };
 
-template <> template <> inline vec<4, int>  ::vec(const vec<4, float> &v) 
-    : x(int(v.x + .5f)), y(int(v.y + .5f)), z(int(v.z + .5f)), w(int(v.w + .5f)) {}
-template <> template <> inline vec<4, float>::vec(const vec<4, int> &v)   
-    : x(v.x), y(v.y), z(v.z), w(v.w) {}
+template <> template <> inline vec<4, int>  ::vec( const vec<4, float> & v )
+    : x( int( v.x + .5f ) ), y( int( v.y + .5f ) ), z( int( v.z + .5f ) ), w( int( v.w + .5f ) )
+{
+}
+template <> template <> inline vec<4, float>::vec( const vec<4, int> & v )
+    : x( v.x ), y( v.y ), z( v.z ), w( v.w )
+{
+}
 
 //--------------------------------------------------------------------------------------
 // Vec 运算符
 // l & r对应项积的和
-template<size_t DIM, typename T> T operator*(const vec<DIM,T>& lhs, const vec<DIM, T>& rhs) {
+template<size_t DIM, typename T> T operator*( const vec<DIM, T> & lhs, const vec<DIM, T> & rhs )
+{
     T ret = T();
-    for (size_t i = DIM; i--; ret += lhs[i] * rhs[i]);
+    for ( size_t i = DIM; i--; ret += lhs[i] * rhs[i] );
     return ret;
 }
 
 // 负
-template<size_t DIM, typename T>vec<DIM, T> operator-(vec<DIM, T> v) {
-    for (size_t i = DIM; i--; v[i] = -v[i]);
+template<size_t DIM, typename T>vec<DIM, T> operator-( vec<DIM, T> v )
+{
+    for ( size_t i = DIM; i--; v[i] = -v[i] );
     return v;
 }
 
 // 加
-template<size_t DIM, typename T>vec<DIM, T> operator+(vec<DIM, T> lhs, const vec<DIM, T>& rhs) {
-    for (size_t i = DIM; i--; lhs[i] += rhs[i]);
+template<size_t DIM, typename T>vec<DIM, T> operator+( vec<DIM, T> lhs, const vec<DIM, T> & rhs )
+{
+    for ( size_t i = DIM; i--; lhs[i] += rhs[i] );
     return lhs;
 }
 // 减
-template<size_t DIM, typename T>vec<DIM, T> operator-(vec<DIM, T> lhs, const vec<DIM,T>& rhs) {
-    for (size_t i = DIM; i--; lhs[i] -= rhs[i]);
+template<size_t DIM, typename T>vec<DIM, T> operator-( vec<DIM, T> lhs, const vec<DIM, T> & rhs )
+{
+    for ( size_t i = DIM; i--; lhs[i] -= rhs[i] );
     return lhs;
 }
 // 乘
-template<size_t DIM, typename T, typename U> vec<DIM, T> operator*(vec<DIM, T> lhs, const U& rhs) {
-    for (size_t i = DIM; i--; lhs[i] *= rhs);
+template<size_t DIM, typename T, typename U> vec<DIM, T> operator*( vec<DIM, T> lhs, const U & rhs )
+{
+    for ( size_t i = DIM; i--; lhs[i] *= rhs );
     return lhs;
 }
 
 // 除
-template<size_t DIM, typename T, typename U> vec<DIM, T> operator/(vec<DIM, T> lhs, const U& rhs) {
+template<size_t DIM, typename T, typename U> vec<DIM, T> operator/( vec<DIM, T> lhs, const U & rhs )
+{
     auto invRhs = 1 / rhs;
-    for (size_t i = DIM; i--; lhs[i] *= invRhs);
+    for ( size_t i = DIM; i--; lhs[i] *= invRhs );
     return lhs;
 }
 
 // 
-template<size_t LEN,size_t DIM,typename T> vec<LEN,T> embed(const vec<DIM,T> &v, T fill=1) {
-    vec<LEN,T> ret;
-    for (size_t i=LEN; i--; ret[i]= (i < DIM ? v[i] : fill));
+template<size_t LEN, size_t DIM, typename T> vec<LEN, T> embed( const vec<DIM, T> & v, T fill = 1 )
+{
+    vec<LEN, T> ret;
+    for ( size_t i = LEN; i--; ret[i] = ( i < DIM ? v[i] : fill ) );
     return ret;
 }
 
-template<size_t LEN,size_t DIM, typename T> vec<LEN,T> proj(const vec<DIM,T> &v) {
-    vec<LEN,T> ret;
-    for (size_t i=LEN; i--; ret[i]=v[i]);
+template<size_t LEN, size_t DIM, typename T> vec<LEN, T> proj( const vec<DIM, T> & v )
+{
+    vec<LEN, T> ret;
+    for ( size_t i = LEN; i--; ret[i] = v[i] );
     return ret;
 }
 
-template <typename T> vec<3, T> cross(vec<3, T> v1, vec<3, T> v2) {
-    return vec<3, T>(v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x);
+template <typename T> vec<3, T> cross( vec<3, T> v1, vec<3, T> v2 )
+{
+    return vec<3, T>( v1.y * v2.z - v1.z * v2.y, v1.z * v2.x - v1.x * v2.z, v1.x * v2.y - v1.y * v2.x );
 }
 
-template <size_t DIM, typename T> std::ostream& operator<<(std::ostream& out, vec<DIM, T>& v) {
-    for(size_t i = 0; i < DIM; i++)
+template <size_t DIM, typename T> std::ostream & operator<<( std::ostream & out, vec<DIM, T> & v )
+{
+    for ( size_t i = 0; i < DIM; i++ )
         out << v[i] << ' ';
     return out;
 }
@@ -173,122 +202,128 @@ using Vec4f = vec<4, float>;
 
 //--------------------------------------------------------------------------------------
 // matrix
-template<size_t DimCols,size_t DimRows,typename T> class mat;
+template<size_t DimCols, size_t DimRows, typename T> class mat;
 //
-template<size_t DIM,typename T> struct dt {
-    static T det(const mat<DIM,DIM,T>& src) {
-        T ret=0;
-        for (size_t i=DIM; i--; ret += src[0][i]*src.cofactor(0,i));
+template<size_t DIM, typename T> struct dt
+{
+    static T det( const mat<DIM, DIM, T> & src )
+    {
+        T ret = 0;
+        for ( size_t i = DIM; i--; ret += src[0][i] * src.cofactor( 0, i ) );
         return ret;
     }
 };
 
-template<typename T> struct dt<1,T> {
-    static T det(const mat<1, 1, T>& src) {
+template<typename T> struct dt<1, T>
+{
+    static T det( const mat<1, 1, T> & src )
+    {
         return src[0][0];
     }
 };
 
-template<size_t DimRows,size_t DimCols,typename T> class mat {
-    
+template<size_t DimRows, size_t DimCols, typename T> class mat
+{
+
     vec<DimCols, T> rows[DimRows];
 
 public:
     mat() {}
-    
-    vec<DimCols, T>& operator[] (const size_t idx) {
-        mAssert(idx < DimRows);
+
+    vec<DimCols, T> & operator[] ( const size_t idx )
+    {
+        mAssert( idx < DimRows );
         return rows[idx];
     }
 
-    const vec<DimCols, T>& operator[] (const size_t idx) const {
-        mAssert(idx < DimRows);
+    const vec<DimCols, T> & operator[] ( const size_t idx ) const
+    {
+        mAssert( idx < DimRows );
         return rows[idx];
     }
 
-    vec<DimRows, T> col(const size_t idx) const {
-        mAssert(idx < DimCols);
+    vec<DimRows, T> col( const size_t idx ) const
+    {
+        mAssert( idx < DimCols );
         vec<DimRows, T> ret;
-        for (size_t i = DimRows; i--; ret[i] = rows[i][idx])
+        for ( size_t i = DimRows; i--; ret[i] = rows[i][idx] )
             ;
         return ret;
     }
 
-    void setCol(size_t idx, vec<DimRows, T> v) {
-        mAssert(idx < DimCols);
-        for (size_t i = DimRows; i--; rows[i][idx] = v[i]);
+    void setCol( size_t idx, vec<DimRows, T> v )
+    {
+        mAssert( idx < DimCols );
+        for ( size_t i = DimRows; i--; rows[i][idx] = v[i] );
     }
 
     //---------------------------------------
     //
     static mat<DimRows, DimCols, T> identity();
 
-    static mat<DimRows, DimCols, T> scale(T sx, T sy, T sz);
+    static mat<DimRows, DimCols, T> scale( T sx, T sy, T sz );
 
-    static mat<DimRows, DimCols, T> translate(T tx, T ty, T tz);
+    static mat<DimRows, DimCols, T> translate( T tx, T ty, T tz );
 
-    static mat<DimRows, DimCols, T> rotate(float angle, T vx, T vy, T vz);
-    static mat<DimRows, DimCols, T> rotate_x(float angle);
-    static mat<DimRows, DimCols, T> rotate_y(float angle);
-    static mat<DimRows, DimCols, T> rotate_z(float angle);
+    static mat<DimRows, DimCols, T> rotate( float angle, T vx, T vy, T vz );
+    static mat<DimRows, DimCols, T> rotate_x( float angle );
+    static mat<DimRows, DimCols, T> rotate_y( float angle );
+    static mat<DimRows, DimCols, T> rotate_z( float angle );
 
-    static mat<DimRows, DimCols, T> lookAt(Vec3f eye, Vec3f gaze, Vec3f up);
+    static mat<DimRows, DimCols, T> lookAt( Vec3f eye, Vec3f gaze, Vec3f up );
 
-    static mat<DimRows, DimCols, T> perspective(float fov, float asp, float n, float f);
-    static mat<DimRows, DimCols, T> frustum(float left, float right, float bottom, float top, float zNear, float zFar);
+    static mat<DimRows, DimCols, T> perspective( float fov, float asp, float n, float f );
+    static mat<DimRows, DimCols, T> frustum( float left, float right, float bottom, float top, float zNear, float zFar );
     //
     //---------------------------------------
 
-    T det() const {
-        return dt<DimCols, T>::det(*this);
+    T det() const
+    {
+        return dt<DimCols, T>::det( *this );
     }
 
     // 求子式
-    mat<DimRows - 1, DimCols - 1, T> getMinor(size_t row, size_t col) const {
+    mat<DimRows - 1, DimCols - 1, T> getMinor( size_t row, size_t col ) const
+    {
         mat<DimRows - 1, DimCols - 1, T> ret;
-        for (size_t i = DimRows - 1; i--; )
-            for (size_t j = DimCols-1; j--; ret[i][j] = rows[i < row ? i : i + 1][j < col ? j : j + 1]);
+        for ( size_t i = DimRows - 1; i--; )
+            for ( size_t j = DimCols - 1; j--; ret[i][j] = rows[i < row ? i : i + 1][j < col ? j : j + 1] );
         return ret;
     }
 
     // 
-    T cofactor(size_t row, size_t col) const {
-        return getMinor(row, col).det() * ((row + col) % 2 ? -1 : 1);
+    T cofactor( size_t row, size_t col ) const
+    {
+        return getMinor( row, col ).det() * ( ( row + col ) % 2 ? -1 : 1 );
     }
 
-    mat<DimRows,DimCols,T> adjugate() const {
-        mat<DimRows,DimCols,T> ret;
-        for (size_t i=DimRows; i--; )
-            for (size_t j=DimCols; j--; ret[i][j] = cofactor(i,j));
+    mat<DimRows, DimCols, T> adjugate() const
+    {
+        mat<DimRows, DimCols, T> ret;
+        for ( size_t i = DimRows; i--; )
+            for ( size_t j = DimCols; j--; ret[i][j] = cofactor( i, j ) );
         return ret;
     }
 
-    mat<DimRows,DimCols,T> invertTranspose() {
-        mat<DimRows,DimCols,T> ret = adjugate();
-        T tmp = ret[0]*rows[0];
-        return ret/tmp;
+    mat<DimRows, DimCols, T> invertTranspose()
+    {
+        mat<DimRows, DimCols, T> ret = adjugate();
+        T tmp = ret[0] * rows[0];
+        return ret / tmp;
     }
 
-    mat<DimRows,DimCols,T> invert() {
+    mat<DimRows, DimCols, T> invert()
+    {
         return invertTranspose().transpose();
     }
 
-    mat<DimCols,DimRows,T> transpose() {
-        mat<DimCols,DimRows,T> ret;
-        for (size_t i=DimCols; i--; ret[i]=this->col(i));
+    mat<DimCols, DimRows, T> transpose()
+    {
+        mat<DimCols, DimRows, T> ret;
+        for ( size_t i = DimCols; i--; ret[i] = this->col( i ) );
         return ret;
     }
 };
-
-template<size_t DimRows, size_t DimCols, typename T> 
-inline mat<DimRows, DimCols, T> operator*(mat<DimRows, DimCols, T> lhs, mat<DimRows, DimCols, T> rhs) {
-    mat<DimRows, DimCols, T> res;
-    for (int i = 0; i < DimRows; i++)
-        for (int j = 0; j < DimCols; j++)
-            for (int k = 0; k < DimCols; k++)
-                res[i][j] += lhs[i][k] * rhs[j][k];
-    return res;
-}
 
 // 返回单位矩阵
 // 1  0  0  0
@@ -296,10 +331,11 @@ inline mat<DimRows, DimCols, T> operator*(mat<DimRows, DimCols, T> lhs, mat<DimR
 // 0  0  1  0
 // 0  0  0  1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::identity() {
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::identity()
+{
     mat<DimRows, DimCols, T> m;
-    for (size_t i = DimRows; i--; )
-        for (size_t j = DimCols; j--; m[i][j] = (i == j))
+    for ( size_t i = DimRows; i--; )
+        for ( size_t j = DimCols; j--; m[i][j] = ( i == j ) )
             ;
     return m;
 }
@@ -310,9 +346,10 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::identity() {
 // 0  0 sz  0
 // 0  0  0  1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::scale(T sx, T sy, T sz) {
-    mat<DimRows,DimCols, T> m;
-    mAssert(sx != 0 && sy != 0 && sz != 0);
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::scale( T sx, T sy, T sz )
+{
+    mat<DimRows, DimCols, T> m;
+    mAssert( sx != 0 && sy != 0 && sz != 0 );
     m[0][0] = sx;
     m[1][1] = sy;
     m[2][2] = sz;
@@ -325,7 +362,8 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::scale(T sx, T sy, T sz) 
 // 0  0  1 tz
 // 0  0  0  1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::translate(T tx, T ty, T tz) {
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::translate( T tx, T ty, T tz )
+{
     auto m = identity();
     m[0][3] = tx;
     m[1][3] = ty;
@@ -344,22 +382,23 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::translate(T tx, T ty, T 
 //  nx*nz*(1-c)-s*ny  ny*nz*(1-c)+s*nx  nz*nz*(1-c)+c     0
 //  0                 0                 0                 1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate(float angle, T vx, T vy, T vz) {
-    Vec3f n = Vec3f(vx, vy, vz).normalize();
-    float cosa = (float)cos(angle);
-    float sina = (float)sin(angle);
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::rotate( float angle, T vx, T vy, T vz )
+{
+    Vec3f n = Vec3f( vx, vy, vz ).normalize();
+    float cosa = (float)cos( angle );
+    float sina = (float)sin( angle );
     auto m = identity();
-    m[0][0] = n.x * n.x * (1 - cosa) + cosa;
-    m[0][1] = n.y * n.x * (1 - cosa) - sina * n.z;
-    m[0][2] = n.z * n.x * (1 - cosa) + sina * n.y;
-    
-    m[1][0] = n.x * n.y * (1 - cosa) + sina * n.z;
-    m[1][1] = n.y * n.y * (1 - cosa) + cosa;
-    m[1][2] = n.z * n.y * (1 - cosa) - sina * n.x;
+    m[0][0] = n.x * n.x * ( 1 - cosa ) + cosa;
+    m[0][1] = n.y * n.x * ( 1 - cosa ) - sina * n.z;
+    m[0][2] = n.z * n.x * ( 1 - cosa ) + sina * n.y;
 
-    m[2][0] = n.x * n.z * (1 - cosa) - sina * n.y;
-    m[2][1] = n.y * n.z * (1 - cosa) + sina * n.x;
-    m[2][2] = n.z * n.z * (1 - cosa) + cosa;
+    m[1][0] = n.x * n.y * ( 1 - cosa ) + sina * n.z;
+    m[1][1] = n.y * n.y * ( 1 - cosa ) + cosa;
+    m[1][2] = n.z * n.y * ( 1 - cosa ) - sina * n.x;
+
+    m[2][0] = n.x * n.z * ( 1 - cosa ) - sina * n.y;
+    m[2][1] = n.y * n.z * ( 1 - cosa ) + sina * n.x;
+    m[2][2] = n.z * n.z * ( 1 - cosa ) + cosa;
 
     return m;
 }
@@ -370,14 +409,15 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate(float angle, T vx
 //  0  s  c  0
 //  0  0  0  1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate_x(float angle) {
-    float cosa = (float)cos(angle);
-    float sina = (float)sin(angle);
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::rotate_x( float angle )
+{
+    float cosa = (float)cos( angle );
+    float sina = (float)sin( angle );
     auto m = identity();
-    m[1][1] =  cosa;
+    m[1][1] = cosa;
     m[1][2] = -sina;
-    m[2][1] =  sina;
-    m[2][2] =  cosa;
+    m[2][1] = sina;
+    m[2][2] = cosa;
     return m;
 }
 
@@ -387,14 +427,15 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate_x(float angle) {
 // -s  0  c  0
 //  0  0  0  1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate_y(float angle) {
-    float cosa = (float)cos(angle);
-    float sina = (float)sin(angle);
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::rotate_y( float angle )
+{
+    float cosa = (float)cos( angle );
+    float sina = (float)sin( angle );
     auto m = identity();
-    m[0][0] =  cosa;
-    m[0][2] =  sina;
+    m[0][0] = cosa;
+    m[0][2] = sina;
     m[2][0] = -sina;
-    m[2][2] =  cosa;
+    m[2][2] = cosa;
     return m;
 }
 
@@ -404,14 +445,15 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate_y(float angle) {
 //  0  0  1  0
 //  0  0  0  1
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate_z(float angle) {
-    float cosa = (float)cos(angle);
-    float sina = (float)sin(angle);
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::rotate_z( float angle )
+{
+    float cosa = (float)cos( angle );
+    float sina = (float)sin( angle );
     auto m = identity();
-    m[0][0] =  cosa;
+    m[0][0] = cosa;
     m[0][1] = -sina;
-    m[1][0] =  sina;
-    m[1][1] =  cosa;
+    m[1][0] = sina;
+    m[1][1] = cosa;
     return m;
 }
 
@@ -428,12 +470,13 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::rotate_z(float angle) {
 // x: normalize(cross(up, z)), the right vector
 // y: cross(z, x), the up vector
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::lookAt(Vec3f eye, Vec3f gaze, Vec3f up) {
-    Vec3f z = (eye - gaze).normalize();
-    Vec3f x = cross(up, z).normalize();
-    Vec3f y = cross(z, x).normalize();
-    auto m   = identity();
-    for (int i = 0; i < 3; i++) {
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::lookAt( Vec3f eye, Vec3f gaze, Vec3f up )
+{
+    Vec3f z = ( eye - gaze ).normalize();
+    Vec3f x = cross( up, z ).normalize();
+    Vec3f y = cross( z, x ).normalize();
+    auto m = identity();
+    for ( int i = 0; i < 3; i++ ) {
         m[0][i] = x[i];
         m[1][i] = y[i];
         m[2][i] = z[i];
@@ -453,14 +496,15 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::lookAt(Vec3f eye, Vec3f 
 //                  0             0  -(f+n)/(f-n) -2f*n/(f-n)
 //                  0             0            -1           0
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::perspective(float fov, float asp, float n, float f) {
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::perspective( float fov, float asp, float n, float f )
+{
     float zRange = f - n;
     auto m = identity();
-    mAssert(fov > 0 && asp > 0);
-    mAssert(n > 0 && f > 0 && zRange > 0);
-    m[1][1] = 1.0f / tanf(fov / 2);
+    mAssert( fov > 0 && asp > 0 );
+    mAssert( n > 0 && f > 0 && zRange > 0 );
+    m[1][1] = 1.0f / tanf( fov / 2 );
     m[0][0] = m[1][1] / asp;
-    m[2][2] = -(n + f) / zRange;
+    m[2][2] = -( n + f ) / zRange;
     m[2][3] = -2 * n * f / zRange;
     m[3][2] = -1;
     m[3][3] = 0;
@@ -477,19 +521,20 @@ inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::perspective(float fov, f
 // 
 //  see http://docs.gl/gl2/glFrustum
 template<size_t DimRows, size_t DimCols, typename T>
-inline mat<DimRows,DimCols,T> mat<DimRows, DimCols, T>::
-frustum(float left, float right, float bottom, float top, float zNear, float zFar) {
+inline mat<DimRows, DimCols, T> mat<DimRows, DimCols, T>::
+frustum( float left, float right, float bottom, float top, float zNear, float zFar )
+{
     float xRange = right - left;
     float yRange = top - bottom;
     float zRange = zFar - zNear;
     auto m = identity();
-    mAssert(zNear > 0 && zFar > 0);
-    mAssert(xRange > 0 && yRange > 0 && zRange > 0);
+    mAssert( zNear > 0 && zFar > 0 );
+    mAssert( xRange > 0 && yRange > 0 && zRange > 0 );
     m[0][0] = 2 * zNear / xRange;
     m[1][1] = 2 * zNear / yRange;
-    m[0][2] = (left + right) / xRange;
-    m[1][2] = (bottom + top) / yRange;
-    m[2][2] = -(zNear + zFar) / zRange;
+    m[0][2] = ( left + right ) / xRange;
+    m[1][2] = ( bottom + top ) / yRange;
+    m[2][2] = -( zNear + zFar ) / zRange;
     m[2][3] = -2 * zNear * zFar / zRange;
     m[3][2] = -1;
     m[3][3] = 0;
@@ -498,11 +543,28 @@ frustum(float left, float right, float bottom, float top, float zNear, float zFa
 
 
 
+
+
+
 using Mat = mat<4, 4, float>;
 
 //------------------------------------------------------------------
 
+template<size_t DimRows, size_t DimCols, typename T> vec<DimRows, T> operator*( const mat<DimRows, DimCols, T> & lhs, const vec<DimCols, T> & rhs )
+{
+    vec<DimRows, T> ret;
+    for ( size_t i = DimRows; i--; ret[i] = lhs[i] * rhs );
+    return ret;
+}
 
+template<size_t R1, size_t C1, size_t C2, typename T>
+inline mat<R1, C2, T> operator*( const mat<R1, C1, T> & lhs, const mat<C1, C2, T> & rhs )
+{
+    mat<R1, C2, T> result;
+    for ( size_t i = R1; i--; )
+        for ( size_t j = C2; j--; result[i][j] = lhs[i] * rhs.col( j ) );
+    return result;
+}
 
 
 
@@ -532,46 +594,49 @@ template <typename T> constexpr bool is_Mat() { return is_same<std::decay<T>::ty
 //--------------------------------------------------------------------------------------
 // 一些数学函数
 
-inline float mRadiansf(float angle) { return (angle * Pi) / 180.0f; }
+inline float mRadiansf( float angle ) { return ( angle * Pi ) / 180.0f; }
 
-template <typename T> inline T mMin3(T a, T b, T c) {
-    if (b < a)  a = b;
-    if (c < a)  return c;
+template <typename T> inline T mMin3( T a, T b, T c )
+{
+    if ( b < a )  a = b;
+    if ( c < a )  return c;
     return a;
 }
 
-template <typename T> inline T mMax3(T a, T b, T c) {
-    if (b > a)  a = b;
-    if (c > a)  return c;
+template <typename T> inline T mMax3( T a, T b, T c )
+{
+    if ( b > a )  a = b;
+    if ( c > a )  return c;
     return a;
 }
 
-__forceinline void Vec4xMat4(_In_ Vec4f & v, Mat & m) {
-    v = Vec4f(v * m.col(0), v * m.col(1), v * m.col(2), v * m.col(3));
-}
+
 
 // 之所以自己写，是因为 std::max 等在包含了 windows.h 的情况下不能使用(宏展开出错？）
-template <typename T> inline T mMax(T a, T b) { return a > b ? a : b; }
-template <typename T> inline T mMin(T a, T b) { return a < b ? a : b; }
+template <typename T> inline T mMax( T a, T b ) { return a > b ? a : b; }
+template <typename T> inline T mMin( T a, T b ) { return a < b ? a : b; }
 
 // clamp family
-template <typename T, 
-    If_Type(!is_vec<T>())>
-    T mClamp(const T & v, const T & lo, const T & hi) {
+template <typename T,
+    If_Type( !is_vec<T>() )>
+    T mClamp( const T & v, const T & lo, const T & hi )
+{
     return v < lo ? lo : hi < v ? hi : v;
 }
 
-template <typename T, 
-    If_Type(is_vec2<T>())>
-    T mClamp(const T & v, const T & lo, const T & hi) {
-    return T(v.x < lo.x ? lo.x : hi.x < v.x ? hi.x : v.x,
-        v.y < lo.y ? lo.y : hi.y < v.y ? hi.y : v.y);
+template <typename T,
+    If_Type( is_vec2<T>() )>
+    T mClamp( const T & v, const T & lo, const T & hi )
+{
+    return T( v.x < lo.x ? lo.x : hi.x < v.x ? hi.x : v.x,
+              v.y < lo.y ? lo.y : hi.y < v.y ? hi.y : v.y );
 }
 
-template <typename T, 
-    If_Type(is_vec3<T>())>
-    T mClamp(const T & v, const T & lo, const T & hi) {
-    return T(v.x < lo.x ? lo.x : hi.x < v.x ? hi.x : v.x,
-        v.y < lo.y ? lo.y : hi.y < v.y ? hi.y : v.y,
-        v.z < lo.z ? lo.z : hi.z < v.z ? hi.z : v.z);
+template <typename T,
+    If_Type( is_vec3<T>() )>
+    T mClamp( const T & v, const T & lo, const T & hi )
+{
+    return T( v.x < lo.x ? lo.x : hi.x < v.x ? hi.x : v.x,
+              v.y < lo.y ? lo.y : hi.y < v.y ? hi.y : v.y,
+              v.z < lo.z ? lo.z : hi.z < v.z ? hi.z : v.z );
 }

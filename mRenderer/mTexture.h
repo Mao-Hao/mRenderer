@@ -39,5 +39,21 @@ public:
 
     bool loadData(std::ifstream &in);
     bool loadTGAImage(const char * path);
+    bool flip_vertically()
+    {
+        if ( !data ) return false;
+        unsigned long bytes_per_line = width * bytesPerPixel;
+        unsigned char * line = new unsigned char[bytes_per_line];
+        int half = height >> 1;
+        for ( int j = 0; j < half; j++ ) {
+            unsigned long l1 = j * bytes_per_line;
+            unsigned long l2 = ( height - 1 - j ) * bytes_per_line;
+            memmove( (void *)line, (void *)( data + l1 ), bytes_per_line );
+            memmove( (void *)( data + l1 ), (void *)( data + l2 ), bytes_per_line );
+            memmove( (void *)( data + l2 ), (void *)line, bytes_per_line );
+        }
+        delete[] line;
+        return true;
+    }
 };
 
