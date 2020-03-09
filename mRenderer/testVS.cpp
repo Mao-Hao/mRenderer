@@ -27,14 +27,14 @@ int testVS( int argc, char * argv[] )
     mShader shader;
 
     vector<mModel> models;
-    models.push_back( mModel( "obj/african_head/african_head.obj" ) );
+    //models.push_back( mModel( "obj/african_head/african_head.obj" ) );
     //models.push_back(mModel("obj/african_head/african_head_eye_inner.obj"));
     //models.push_back(mModel("obj/african_head/african_head_eye_outer.obj"));
     //models.push_back(mModel("obj/diablo3_pose/diablo3_pose.obj"));
-    //models.push_back(mModel("obj/assassin/hair.obj", 0.01f));
-    //models.push_back(mModel("obj/assassin/face.obj", 0.01f));
-    //models.push_back(mModel("obj/assassin/body.obj", 0.01f));
-    //models.push_back(mModel("obj/assassin/weapon.obj", 0.01f));
+    models.push_back(mModel("obj/assassin/hair.obj", 0.01f));
+    models.push_back(mModel("obj/assassin/face.obj", 0.01f));
+    models.push_back(mModel("obj/assassin/body.obj", 0.01f));
+    models.push_back(mModel("obj/assassin/weapon.obj", 0.01f));
     float prev = (float)getNativeTime();
     while ( !mDevice::isKeyPressed( KeyCode::ESC ) ) {
         float curr = (float)getNativeTime();
@@ -42,18 +42,22 @@ int testVS( int argc, char * argv[] )
         setRecordsTime( prev, curr );
         prev = curr;
 
+//#pragma loop(hint_parallel(0))
         for ( int i = 0; i < mDevice::width; i++ )
             for ( int j = 0; j < mDevice::height; j++ )
                 mDevice::setPixel_rc( i, j, 0 );
+
         //--beg--
 
         shader.setMatrix(
-            Mat::translate( 0, 0, 0 ),
+            Mat::translate( 0, 1, 0 ),
             camera.getViewMatrix(),
             camera.getProjMatrix()
         );
+
         for ( auto & model : models ) {
             shader.setModel( &model );
+//#pragma loop(hint_parallel(0))
             for ( size_t i = 0; i != model.facesSize(); i++ ) {
                 mRasterize( shader, i );
             }

@@ -41,8 +41,8 @@ class mDevice
 public:
     static int          width;
     static int          height;
-    static uint      ** framebuffer;
-    static float     ** zbuffer;
+    static uint ** framebuffer;
+    static float ** zbuffer;
     static bool         keys[(uint)KeyCode::KEY_NUM];
     static bool         btns[(uint)MouseBtn::BTN_NUM];
     static CallbackFunc callbackfuncs;
@@ -52,14 +52,18 @@ public:
     {
         //mAssert(x >= 0); mAssert(x < width);
         //mAssert(y >= 0); mAssert(y < height);
+#ifndef mNDebug
         if ( x >= 0 && x < width && y >= 0 && y < height )
+#endif
             framebuffer[y][x] = toRawColor( c );
     }
     static void setPixel_rc( int x, int y, rawColor c = 0xffffff )
     {
-        mAssert(x >= 0); mAssert(x < width);
-        mAssert(y >= 0); mAssert(y < height);
+        mAssert( x >= 0 ); mAssert( x < width );
+        mAssert( y >= 0 ); mAssert( y < height );
+#ifndef mNDebug
         if ( x >= 0 && x < width && y >= 0 && y < height )
+#endif
             framebuffer[y][x] = c;
     }
     static mColor getColor( int x, int y )
@@ -104,7 +108,7 @@ public:
     // ´ýÓÅ»¯
     static void freshZBuffer()
     {
-        //memset()
+//#pragma loop(hint_parallel(0))
         for ( int i = 0; i < mDevice::height; i++ )
             for ( int j = 0; j < mDevice::width; j++ )
                 mDevice::zbuffer[i][j] = .0f;

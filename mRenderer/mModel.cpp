@@ -43,8 +43,8 @@ mModel::mModel(const char * path, float sz) {
             faces.push_back(f);
         }
     }
-    loadTexture(path, "_diffuse.tga", diffuseMap);
-    //loadTexture(path, "_basecolor.tga", diffuseMap);
+    //loadTexture(path, "_diffuse.tga", diffuseMap);
+    loadTexture(path, "_basecolor.tga", diffuseMap);
 }
 
 mModel::~mModel() {}

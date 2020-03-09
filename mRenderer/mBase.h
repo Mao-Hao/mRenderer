@@ -13,7 +13,7 @@ using uint      = unsigned int;
 using ulong     = unsigned long;
 using rawColor  = uint;             // 4×Ö½Ú
 
-//#define mNDebug
+#define mNDebug
 
 #ifndef mNDebug
 #define mAssert(exp)    do { if(!(exp)) {fprintf(stderr, " - AF: %s; %s:%d\n", #exp, __FILE__, __LINE__); }} while(0)
