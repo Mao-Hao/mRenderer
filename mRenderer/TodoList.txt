@@ -1,11 +1,19 @@
+近期任务
 
-一. 优化相关
-	1. zbuffer优化，二维数组变为一维 + memset ？
-	2. 二维数组的平铺
-	3. framebuffer优化，memset刷新颜色
-	4. 数据结构优化 三角形条带 / 扇区
-	5. 多线程优化 openmp
+1.法线	donw
 
+2.整理model类，把纹理加载和绑定单独拿出来 done
 
-二. 功能设计
-	1. 用lambda表达式作为着色器类中函数的参数，实现用户在外部书写着色器程序的效果
+3.重构着色器类	done
+
+4.引入orbital camera
+
+5.整理mPaint.h
+
+6.三角形分割（裁剪）
+
+7.shadow mapping
+
+8.更好的model parser （对自定义obj格式的支持）
+
+9. zbuffer 放在win32.cpp里初始化和free吧

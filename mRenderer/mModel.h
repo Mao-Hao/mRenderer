@@ -7,6 +7,8 @@
 #include "mColor.h"
 
 class mModel {
+private:
+    const char * modelPath;
 public:
     std::vector<Vec3f> vertices;
     // зЂвт Vec3i (x: vertex, y: uv, z: normal) 
@@ -19,6 +21,8 @@ public:
 public:
     mModel(const char *path, float sz = 1.0f);
     ~mModel();
+
+    bool bindTexture(mTGATexture & tex, const char * suffix);
 
     int vertSize();
     int facesSize();
@@ -35,5 +39,5 @@ public:
     
     mColor diffuse(Vec2f uv);
 
-    void loadTexture(const char * path, const char * suffix, mTGATexture & tex);
+    bool loadTexture(const char * path, const char * suffix, mTGATexture & tex);
 };

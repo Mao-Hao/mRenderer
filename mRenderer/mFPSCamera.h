@@ -48,11 +48,12 @@ public:
 
     void processKeyboard(KeyCode k, float deltaTime) {
         float velocity = movementSpeed * deltaTime;
-        if (k == KeyCode::W)        eye = eye + front * 30 * velocity;
-        if (k == KeyCode::S)        eye = eye - front * 30 * velocity;
-        if (k == KeyCode::A)        eye = eye - right * 30 * velocity;
-        if (k == KeyCode::D)        eye = eye + right * 30 * velocity;
-
+        if (k == KeyCode::W)        eye = eye + front * velocity;
+        if (k == KeyCode::S)        eye = eye - front * velocity;
+        if (k == KeyCode::A)        eye = eye - right * velocity;
+        if (k == KeyCode::D)        eye = eye + right * velocity;
+        if (k == KeyCode::Q)        eye.y -= velocity;
+        if (k == KeyCode::E)        eye.y += velocity;
     }
 
     void processMouseMovement(float xOffset, float yOffset, bool constrainPitch = true) {
@@ -72,7 +73,6 @@ public:
         zoom = mClamp(zoom, 1.0f, 60.0f);
     }
 
-private:
 
     void updateCameraVectors() {
         front = Vec3f(
@@ -83,8 +83,6 @@ private:
         
         right = cross(front, worldUp).normalize();
         up    = cross(right, front).normalize();
-
-
     }
 };
 

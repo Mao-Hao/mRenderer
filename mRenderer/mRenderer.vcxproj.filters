@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="shader">
       <UniqueIdentifier>{12a2b2f1-f130-4e7f-bc9b-fc223e277f04}</UniqueIdentifier>
     </Filter>
@@ -72,25 +64,31 @@
     <ClInclude Include="mModel.h">
       <Filter>base\header</Filter>
     </ClInclude>
-    <ClInclude Include="mShader.h">
-      <Filter>shader</Filter>
-    </ClInclude>
     <ClInclude Include="mTexture.h">
       <Filter>base\header</Filter>
     </ClInclude>
     <ClInclude Include="testNormal.h">
       <Filter>testCases</Filter>
     </ClInclude>
+    <ClInclude Include="mShader.h">
+      <Filter>shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader_1.h">
+      <Filter>shader</Filter>
+    </ClInclude>
+    <ClInclude Include="mOrbitalCameraHelper.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="mOrbitalCamera.h">
+      <Filter>camera</Filter>
+    </ClInclude>
+    <ClInclude Include="testOCH.h">
+      <Filter>testCases</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="win32.cpp">
       <Filter>win</Filter>
-    </ClCompile>
-    <ClCompile Include="mDevice.cpp">
-      <Filter>base\src</Filter>
     </ClCompile>
     <ClCompile Include="mPaint.cpp">
       <Filter>base\src</Filter>
@@ -110,6 +108,16 @@
     <ClCompile Include="testNormal.cpp">
       <Filter>testCases</Filter>
     </ClCompile>
+    <ClCompile Include="mOrbitalCameraHelper.cpp">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="mOrbitalCamera.cpp">
+      <Filter>camera</Filter>
+    </ClCompile>
+    <ClCompile Include="testOCH.cpp">
+      <Filter>testCases</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\日志\日志.txt" />

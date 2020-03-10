@@ -128,6 +128,7 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/Qpar %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -153,6 +154,7 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/Qpar %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,15 +170,17 @@
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="mDevice.cpp" />
     <ClCompile Include="mFPSCameraHelper.cpp" />
     <ClCompile Include="mModel.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="mOrbitalCamera.cpp" />
+    <ClCompile Include="mOrbitalCameraHelper.cpp" />
     <ClCompile Include="mPaint.cpp" />
     <ClCompile Include="mTexture.cpp" />
     <ClCompile Include="testNormal.cpp" />
+    <ClCompile Include="testOCH.cpp" />
     <ClCompile Include="testVS.cpp" />
     <ClCompile Include="win32.cpp" />
   </ItemGroup>
@@ -191,14 +195,18 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="mOrbitalCamera.h" />
+    <ClInclude Include="mOrbitalCameraHelper.h" />
     <ClInclude Include="mPaint.h" />
     <ClInclude Include="mPoint.h" />
     <ClInclude Include="mBase.h" />
     <ClInclude Include="mMath.hpp" />
-    <ClInclude Include="mShader.h" />
+    <ClInclude Include="Shader_1.h" />
     <ClInclude Include="mTexture.h" />
     <ClInclude Include="mVertex.h" />
+    <ClInclude Include="mShader.h" />
     <ClInclude Include="testNormal.h" />
+    <ClInclude Include="testOCH.h" />
     <ClInclude Include="testVS.h" />
     <ClInclude Include="win32.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>

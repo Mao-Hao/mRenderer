@@ -14,7 +14,15 @@ static Mat viewport( int x, int y, int w, int h )
     return vp;
 }
 
-static Mat vp = viewport( 0, 0, 800, 800 );
+static Mat vp = viewport( 0, 0, mDevice::width, mDevice::height );
+
+// true -> discard
+inline bool mClip( Vec4f v )
+{
+    if ( v.x < -v.w || v.x > v.w || v.y < -v.w || v.y > v.w || v.z < -v.w || v.z > v.w )
+        return true;
+    return false;
+}
 
 static inline Vec2i NDC2Screen( Vec3f p )
 {
@@ -59,45 +67,6 @@ void mLine( mPoint2D & p0, mPoint2D & p1 )
     }
 }
 
-
-static inline Vec3f barycentric( Vec2i a, Vec2i b, Vec2i c, Vec2i p )
-{
-    auto  sx = Vec3i( b.x - a.x, c.x - a.x, a.x - p.x );
-    auto  sy = Vec3i( b.y - a.y, c.y - a.y, a.y - p.y );
-    Vec3f u = cross( sx, sy );
-    if ( std::abs( u[2] ) < 1 ) return Vec3f( -1, 1, 1 );
-    return Vec3f( 1.0f - ( u.x + u.y ) / u.z, u.y / u.z, u.x / u.z );
-}
-
-// bug
-void triangle( mPoint2D & A, mPoint2D & B, mPoint2D & C )
-{
-    if ( A.p.y == B.p.y && A.p.y == C.p.y ) return;
-    // 包围盒 max, min 防止负值/过大值 
-    int xmin = mMax( 0, mMin3( A.p.x, B.p.x, C.p.x ) );
-    int ymin = mMax( 0, mMin3( A.p.y, B.p.y, C.p.y ) );
-    int xmax = mMin( mDevice::width, mMax3( A.p.x, B.p.x, C.p.x ) );
-    int ymax = mMin( mDevice::height, mMax3( A.p.y, B.p.y, C.p.y ) );
-
-    for ( int y = ymin; y <= ymax; y++ )
-        for ( int x = xmin; x <= xmax; x++ ) {
-            Vec3f k = barycentric( A.p, B.p, C.p, Vec2i( x, y ) );
-            if ( k.x > 0 && k.y > 0 && k.z > 0 ) {
-                mColor mc = A.mc * k.x + B.mc * k.y + C.mc * k.z;
-                mDevice::setPixel( x, y, mc );
-            }
-        }
-}
-
-// 待优化 但还是比楼上快
-// 1. Gamma的计算可优化（在解决误差的前提下）
-// 2. 可改为增量算法
-// 3. 对退化三角形，即 F* = 0 ，可能出现除数为0现象 done
-// 4. 三角形边正好过(-1, -1)的情况如何处理？
-// todo:
-// 1. zbuffer
-// 2. bool discard = 
-// 3. clip
 void mTriangle( mPoint2D & A, mPoint2D & B, mPoint2D & C )
 {
     if ( A.p.y == B.p.y && A.p.y == C.p.y )   return; // 退化三角形
@@ -108,7 +77,7 @@ void mTriangle( mPoint2D & A, mPoint2D & B, mPoint2D & C )
     int ymax = mMin( mDevice::height, mMax3( A.p.y, B.p.y, C.p.y ) );
 
     // 注意带参宏的展开方式，若前有参数 x，则每个 x 都会被识别为参数
-#define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
+    #define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
     float Falpha = F( B.p, C.p, A.p.x, A.p.y );
     float Fbeta = F( C.p, A.p, B.p.x, B.p.y );
     float Fgamma = F( A.p, B.p, C.p.x, C.p.y );
@@ -131,104 +100,62 @@ void mTriangle( mPoint2D & A, mPoint2D & B, mPoint2D & C )
                 }
             }
         }
-#undef F(A, B, X, Y)
+    #undef F(A, B, X, Y)
 }
 
-void mTriangleZ( mVertex & A, mVertex & B, mVertex & C )
-{
-    Vec2i a = NDC2Screen( A.p );
-    Vec2i b = NDC2Screen( B.p );
-    Vec2i c = NDC2Screen( C.p );
 
-    if ( a.y == b.y && a.y == c.y )   return; // 退化三角形
-
-    // 包围盒 max, min 
-    int xmin = mMax( 0, mMin3( a.x, b.x, c.x ) );
-    int ymin = mMax( 0, mMin3( a.y, b.y, c.y ) );
-    int xmax = mMin( mDevice::width, mMax3( a.x, b.x, c.x ) );
-    int ymax = mMin( mDevice::height, mMax3( a.y, b.y, c.y ) );
-
-    // 注意带参宏的展开方式，若前有参数 x，则每个 x 都会被识别为参数
+// alis
+#define PNT_A   shader->vertices[0]
+#define PNT_B   shader->vertices[1]
+#define PNT_C   shader->vertices[2]
 #define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
-    float Falpha = F( b, c, a.x, a.y );
-    float Fbeta = F( c, a, b.x, b.y );
-    float Fgamma = F( a, b, c.x, c.y );
-    float alpha, beta, gamma, z;
-    mColor mc = White;
-    for ( int y = ymin; y < ymax; y++ )
-        for ( int x = xmin; x < xmax; x++ ) {
-            alpha = F( b, c, x, y ) / Falpha;
-            if ( alpha < 0 )  continue;
-            beta = F( c, a, x, y ) / Fbeta;
-            //gamma = 1 - alpha - beta; // 存在误差
-            gamma = F( a, b, x, y ) / Fgamma;
-            // 改为 < 和 || continue 更好
-            if ( alpha >= 0 && beta >= 0 && gamma >= 0 ) {
-                if ( ( alpha > 0 || Falpha * F( b, c, -1, -1 ) ) &&
-                    ( beta > 0 || Fbeta * F( c, a, -1, -1 ) ) &&
-                     ( gamma > 0 || Fgamma * F( a, b, -1, -1 ) ) ) {
-                    z = A.p.z * alpha + B.p.z * beta + C.p.z * gamma;
-                    z = ( 1.0f / z - invZNear ) / ( invDZFN );
-                    if ( mDevice::mZTest( x, y, z ) ) {
-                        mc = A.mc * alpha + B.mc * beta + C.mc * gamma;
-                        mDevice::setPixel( x, y, mc );
-                    }
-                }
-            }
-        }
-#undef F(A, B, X, Y)
-}
-
-void mRasterize( mShader & shader, int faceIndex )
+void mRasterize( mShader * shader, int faceIndex )
 {
-    shader.VertexShader( faceIndex );
+    shader->VertexShader( faceIndex );
+    
+    if ( mClip( PNT_A ) || mClip( PNT_B ) || mClip( PNT_C ) )   return;
 
-    if ( mClip( shader.vertices[0] ) || mClip( shader.vertices[1] ) || mClip( shader.vertices[2] ) )
-        return;
-
-    for ( auto & v : shader.vertices ) {
+    for ( auto & v : shader->vertices ) {
         v = vp * v;
         float inW = 1.0f / v.w;
         v = { v.x * inW, v.y * inW, v.z * inW, inW };
     }
-    Vec2f a = { shader.vertices[0].x, shader.vertices[0].y };
-    Vec2f b = { shader.vertices[1].x, shader.vertices[1].y };
-    Vec2f c = { shader.vertices[2].x, shader.vertices[2].y };
-
-    //if ( a.y == b.y && a.y == c.y )   return;     // 退化三角形
+    //if ( PNT_A.y == PNT_B.y && PNT_A.y == PNT_C.y )   return;     // 退化三角形
     // 包围盒 max, min 
-    float xmin = mMax( 0.0f, mMin3( a.x, b.x, c.x ) );
-    float ymin = mMax( 0.0f, mMin3( a.y, b.y, c.y ) );
-    float xmax = mMin( (float)mDevice::width, mMax3( a.x, b.x, c.x ) );
-    float ymax = mMin( (float)mDevice::height, mMax3( a.y, b.y, c.y ) );
+    float xmin = mMax( 0.0f, mMin3( PNT_A.x, PNT_B.x, PNT_C.x ) );
+    float ymin = mMax( 0.0f, mMin3( PNT_A.y, PNT_B.y, PNT_C.y ) );
+    float xmax = mMin( (float)mDevice::width, mMax3( PNT_A.x, PNT_B.x, PNT_C.x ) );
+    float ymax = mMin( (float)mDevice::height, mMax3( PNT_A.y, PNT_B.y, PNT_C.y ) );
 
-#define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
-    float Falpha = F( b, c, a.x, a.y );
-    float Fbeta = F( c, a, b.x, b.y );
-    float Fgamma = F( a, b, c.x, c.y );
+    float Falpha = F( PNT_B, PNT_C, PNT_A.x, PNT_A.y );
+    float Fbeta = F( PNT_C, PNT_A, PNT_B.x, PNT_B.y );
+    float Fgamma = F( PNT_A, PNT_B, PNT_C.x, PNT_C.y );
     float alpha, beta, gamma, z, w;
     mColor mc = White;
 
     for ( int y = ymin; y < ymax; y++ ) {
         for ( int x = xmin; x < xmax; x++ ) {
-            alpha = F( b, c, x, y ) / Falpha;
+            alpha = F( PNT_B, PNT_C, x, y ) / Falpha;
             if ( alpha < 0 )                continue;   // 提前减枝
-            beta = F( c, a, x, y ) / Fbeta;
+            beta = F( PNT_C, PNT_A, x, y ) / Fbeta;
             gamma = 1 - alpha - beta; // 存在误差 // 貌似效率提高不大
             if ( beta < 0 || gamma < 0 )    continue;
-            if ( ( alpha > 0 || Falpha * F( b, c, -1, -1 ) )
-                 && ( beta > 0 || Fbeta * F( c, a, -1, -1 ) )
-                 && ( gamma > 0 || Fgamma * F( a, b, -1, -1 ) ) ) {
-                z = shader.vertices[0].z * alpha + shader.vertices[1].z * beta + shader.vertices[2].z * gamma;
+            if ( ( alpha > 0 || Falpha * F( PNT_B, PNT_C, -1, -1 ) )
+                 && ( beta > 0 || Fbeta * F( PNT_C, PNT_A, -1, -1 ) )
+                 && ( gamma > 0 || Fgamma * F( PNT_A, PNT_B, -1, -1 ) ) ) {
+                z = PNT_A.z * alpha + PNT_B.z * beta + PNT_C.z * gamma;
                 // z = ( 1.0f / z - invZNear ) / ( invDZFN );
-                w = shader.vertices[0].w * alpha + shader.vertices[1].w * beta + shader.vertices[2].w * gamma;
+                w = PNT_A.w * alpha + PNT_B.w * beta + PNT_C.w * gamma;
                 z *= w;
                 if ( mDevice::mZTest( x, y, z ) ) {
-                    if ( !shader.FrameShader( { alpha, beta, gamma }, mc ) )
+                    if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) )
                         mDevice::setPixel( x, y, mc );
                 }
             }
         }
     }
 }
+#undef PNT_A
+#undef PNT_B
+#undef PNT_C
 #undef F(A, B, X, Y)
