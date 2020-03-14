@@ -17,7 +17,7 @@ using std::vector;
 int testVS( int argc, char * argv[] )
 {
     if ( mInitWindow() != 0 )  return -1;
-    mFPSCamera camera( Vec3f( 0.0f, 0.0f, 3.0f ), Vec3f( 0.0f, 1.0f, 0.0f ), Vec3f( 0.0f, 0.0f, -1.0f ) );
+    mFPSCamera camera( Vec3f( 0.0f, -1.0f, 4.0f ), Vec3f( 0.0f, 1.0f, 0.0f ), Vec3f( 0.0f, 0.0f, -1.0f ) );
     setCamera( camera );
     mDevice::callbackfuncs.keyCallback = FPSCKeyCallback;
     mDevice::callbackfuncs.cursorCallback = FPSCCursorCallback;
@@ -26,7 +26,7 @@ int testVS( int argc, char * argv[] )
 
     Shader_1 * shader = new Shader_1;
 
-    vector<mModel*> models;
+    vector<mModel *> models;
 
     //auto m = new mModel( "obj/diablo3_pose/diablo3_pose.obj" );
     //m->bindTexture( m->diffuseMap, "_diffuse.tga" );
@@ -43,8 +43,11 @@ int testVS( int argc, char * argv[] )
     models.push_back( new mModel( "obj/assassin/face.obj", 0.01f ) );
     models.push_back( new mModel( "obj/assassin/body.obj", 0.01f ) );
     models.push_back( new mModel( "obj/assassin/weapon.obj", 0.01f ) );
-    for (auto m : models)
-        m->bindTexture(m->diffuseMap, "_basecolor.tga");
+    for ( auto m : models ) {
+        m->bindTexture( m->diffuseMap, "_basecolor.tga" );
+        m->bindTexture( m->normalMap, "_normal.tga" );
+        m->bindTexture( m->specularMap, "_metalness.tga" );
+    }
 
     float prev = (float)getNativeTime();
     while ( !mDevice::isKeyPressed( KeyCode::ESC ) ) {
@@ -61,7 +64,7 @@ int testVS( int argc, char * argv[] )
         //--beg--
 
         shader->setMatrix(
-            Mat::translate( 0, 1, 0 ),
+            Mat::translate( 0, 0, 0 ),
             camera.getViewMatrix(),
             camera.getProjMatrix()
         );

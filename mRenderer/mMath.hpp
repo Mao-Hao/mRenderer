@@ -3,6 +3,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <array>
 #include "mBase.h"
 
 // 基础库，包含各类Vec/Mat
@@ -550,7 +551,16 @@ using Mat = mat<4, 4, float>;
 
 //------------------------------------------------------------------
 
-template<size_t DimRows, size_t DimCols, typename T> vec<DimRows, T> operator*( const mat<DimRows, DimCols, T> & lhs, const vec<DimCols, T> & rhs )
+template<size_t DimRows, size_t DimCols, typename T>
+mat<DimCols, DimRows, T> operator/( mat<DimRows, DimCols, T> lhs, const T & rhs )
+{
+    T invRhs = (T)1 / rhs;
+    for ( size_t i = DimRows; i--; lhs[i] = lhs[i] * invRhs );
+    return lhs;
+}
+
+template<size_t DimRows, size_t DimCols, typename T>
+vec<DimRows, T> operator*( const mat<DimRows, DimCols, T> & lhs, const vec<DimCols, T> & rhs )
 {
     vec<DimRows, T> ret;
     for ( size_t i = DimRows; i--; ret[i] = lhs[i] * rhs );
@@ -639,4 +649,17 @@ template <typename T,
     return T( v.x < lo.x ? lo.x : hi.x < v.x ? hi.x : v.x,
               v.y < lo.y ? lo.y : hi.y < v.y ? hi.y : v.y,
               v.z < lo.z ? lo.z : hi.z < v.z ? hi.z : v.z );
+}
+
+// 重心插值
+template <typename T>
+__forceinline T interpolate( std::array<T, 3> & v, Vec3f t )
+{
+    return v[0] * t.x + v[1] * t.y + v[2] * t.z;
+}
+
+// reflect
+__forceinline Vec3f reflect( Vec3f i, Vec3f n)
+{
+    return i - n * 2 * (i * n);
 }

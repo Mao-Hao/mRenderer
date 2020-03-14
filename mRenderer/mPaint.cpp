@@ -105,57 +105,55 @@ void mTriangle( mPoint2D & A, mPoint2D & B, mPoint2D & C )
 
 
 // alis
-#define PNT_A   shader->vertices[0]
-#define PNT_B   shader->vertices[1]
-#define PNT_C   shader->vertices[2]
+#define PNTS    shader->vertices
 #define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
 void mRasterize( mShader * shader, int faceIndex )
 {
     shader->VertexShader( faceIndex );
-    
-    if ( mClip( PNT_A ) || mClip( PNT_B ) || mClip( PNT_C ) )   return;
 
-    for ( auto & v : shader->vertices ) {
+    if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
+
+    for ( auto & v : PNTS ) {
         v = vp * v;
         float inW = 1.0f / v.w;
         v = { v.x * inW, v.y * inW, v.z * inW, inW };
     }
-    //if ( PNT_A.y == PNT_B.y && PNT_A.y == PNT_C.y )   return;     // 退化三角形
+    if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
     // 包围盒 max, min 
-    float xmin = mMax( 0.0f, mMin3( PNT_A.x, PNT_B.x, PNT_C.x ) );
-    float ymin = mMax( 0.0f, mMin3( PNT_A.y, PNT_B.y, PNT_C.y ) );
-    float xmax = mMin( (float)mDevice::width, mMax3( PNT_A.x, PNT_B.x, PNT_C.x ) );
-    float ymax = mMin( (float)mDevice::height, mMax3( PNT_A.y, PNT_B.y, PNT_C.y ) );
+    float xmin = mMax( 0.0f, mMin3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
+    float ymin = mMax( 0.0f, mMin3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
+    float xmax = mMin( (float)mDevice::width, mMax3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
+    float ymax = mMin( (float)mDevice::height, mMax3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
 
-    float Falpha = F( PNT_B, PNT_C, PNT_A.x, PNT_A.y );
-    float Fbeta = F( PNT_C, PNT_A, PNT_B.x, PNT_B.y );
-    float Fgamma = F( PNT_A, PNT_B, PNT_C.x, PNT_C.y );
+    float Falpha = F( PNTS[1], PNTS[2], PNTS[0].x, PNTS[0].y );
+    float Fbeta = F( PNTS[2], PNTS[0], PNTS[1].x, PNTS[1].y );
+    float Fgamma = F( PNTS[0], PNTS[1], PNTS[2].x, PNTS[2].y );
     float alpha, beta, gamma, z, w;
     mColor mc = White;
 
     for ( int y = ymin; y < ymax; y++ ) {
         for ( int x = xmin; x < xmax; x++ ) {
-            alpha = F( PNT_B, PNT_C, x, y ) / Falpha;
+            alpha = F( PNTS[1], PNTS[2], x, y ) / Falpha;
             if ( alpha < 0 )                continue;   // 提前减枝
-            beta = F( PNT_C, PNT_A, x, y ) / Fbeta;
+            beta = F( PNTS[2], PNTS[0], x, y ) / Fbeta;
+            //gamma = F( PNTS[0], PNTS[1], x, y ) / Fgamma;
             gamma = 1 - alpha - beta; // 存在误差 // 貌似效率提高不大
             if ( beta < 0 || gamma < 0 )    continue;
-            if ( ( alpha > 0 || Falpha * F( PNT_B, PNT_C, -1, -1 ) )
-                 && ( beta > 0 || Fbeta * F( PNT_C, PNT_A, -1, -1 ) )
-                 && ( gamma > 0 || Fgamma * F( PNT_A, PNT_B, -1, -1 ) ) ) {
-                z = PNT_A.z * alpha + PNT_B.z * beta + PNT_C.z * gamma;
-                // z = ( 1.0f / z - invZNear ) / ( invDZFN );
-                w = PNT_A.w * alpha + PNT_B.w * beta + PNT_C.w * gamma;
+            if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
+                 && ( beta > 0 || Fbeta * F( PNTS[2], PNTS[0], -1, -1 ) )
+                 && ( gamma > 0 || Fgamma * F( PNTS[0], PNTS[1], -1, -1 ) ) ) {
+                z = PNTS[0].z * alpha + PNTS[1].z * beta + PNTS[2].z * gamma;
+                z = ( 1.0f / z - invZNear ) / ( invDZFN );
+                w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
                 z *= w;
                 if ( mDevice::mZTest( x, y, z ) ) {
-                    if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) )
+                    if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
                         mDevice::setPixel( x, y, mc );
+                    }
                 }
             }
         }
     }
 }
-#undef PNT_A
-#undef PNT_B
-#undef PNT_C
+#undef PNTS
 #undef F(A, B, X, Y)

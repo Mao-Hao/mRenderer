@@ -39,5 +39,7 @@ public:
     
     mColor diffuse(Vec2f uv);
 
+    float specular( Vec2f uvf );
+
     bool loadTexture(const char * path, const char * suffix, mTGATexture & tex);
 };

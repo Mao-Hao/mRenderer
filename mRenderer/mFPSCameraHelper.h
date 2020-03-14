@@ -15,3 +15,5 @@ void FPSCBtnCallback(MouseBtn btn, bool pressed);
 void FPSCCursorCallback(float xPos, float yPos);
 
 void FPSCScrollCallback(float offset);
+
+Vec3f * getCameraPos();

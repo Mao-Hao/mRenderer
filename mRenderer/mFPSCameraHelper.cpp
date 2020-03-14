@@ -66,7 +66,7 @@ void FPSCCursorCallback( float xPos, float yPos )
     }
     float xOffset = xPos - record.lastXPos;
     float yOffset = yPos - record.lastYPos;
-    
+
     record.lastXPos = xPos;
     record.lastYPos = yPos;
     record.camera->processMouseMovement( xOffset, yOffset );
@@ -75,4 +75,10 @@ void FPSCCursorCallback( float xPos, float yPos )
 void FPSCScrollCallback( float offset )
 {
     record.camera->processMouseScroll( offset );
+}
+
+Vec3f * getCameraPos()
+{
+    mAssert( record.camera != nullptr );
+    return &record.camera->eye;
 }

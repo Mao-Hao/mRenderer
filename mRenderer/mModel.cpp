@@ -107,7 +107,8 @@ Vec2f mModel::getTexcoord( int faceIndex, int vertIndex )
 Vec3f mModel::getNormal( int faceIndex, int vertIndex )
 {
     int index = faces[faceIndex][vertIndex][2];
-    return normals[index].normalize();
+    return Vec3f( normals[index].x, -normals[index].y, normals[index].z ).normalize();
+    //return normals[index].normalize();
 }
 
 Vec3f mModel::getNormal( Vec2f _texcoord )
@@ -121,4 +122,10 @@ mColor mModel::diffuse( Vec2f _uv )
     Vec2i uv( _uv[0] * diffuseMap.width, _uv[1] * diffuseMap.height );
     auto color = diffuseMap.getColor( uv[0], uv[1] );
     return { color.x, color.y, color.z };
+}
+
+float mModel::specular( Vec2f _uv )
+{
+    Vec2i uv( _uv[0] * specularMap.width, _uv[1] * specularMap.width );
+    return specularMap.getColor( uv[0], uv[1] )[2] / 255.f;
 }

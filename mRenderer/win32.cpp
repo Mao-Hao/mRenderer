@@ -38,16 +38,16 @@ static void processBtnMsg( MouseBtn btn, bool pressed )
         mDevice::callbackfuncs.btnCallback( btn, pressed );
 }
 
-static TRACKMOUSEEVENT tme = {
-    sizeof( TRACKMOUSEEVENT ),
-    TME_HOVER | TME_LEAVE,
-    hwnd,
-    HOVER_DEFAULT
-};
+//static TRACKMOUSEEVENT tme = {
+//    sizeof( TRACKMOUSEEVENT ),
+//    TME_HOVER | TME_LEAVE,
+//    hwnd,
+//    HOVER_DEFAULT
+//};
 
 static void processCursorMsg()
 {
-    TrackMouseEvent( &tme );
+    //TrackMouseEvent( &tme );
     float xPos = -1;
     float yPos = -1;
     getCursorPos( xPos, yPos );
@@ -72,7 +72,7 @@ static LRESULT CALLBACK processMsg( HWND hwnd, UINT msg, WPARAM wParam, LPARAM l
     case WM_RBUTTONDOWN:    processBtnMsg( MouseBtn::R, true );     break;
     case WM_RBUTTONUP:      processBtnMsg( MouseBtn::R, false );    break;
     case WM_MOUSEMOVE:      processCursorMsg();                     break;
-    case WM_MOUSELEAVE:                         break; 
+  //case WM_MOUSELEAVE:     // TODO                                 break; 
     case WM_MOUSEWHEEL:     processScrollMsg( GET_WHEEL_DELTA_WPARAM( wParam ) / (float)WHEEL_DELTA );
                                                                     break;
     default:                return DefWindowProc( hwnd, msg, wParam, lParam );

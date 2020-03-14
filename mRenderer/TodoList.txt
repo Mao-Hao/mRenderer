@@ -1,6 +1,6 @@
 近期任务
 
-1.法线	donw
+1.法线	done
 
 2.整理model类，把纹理加载和绑定单独拿出来 done
 
@@ -17,3 +17,11 @@
 8.更好的model parser （对自定义obj格式的支持）
 
 9. zbuffer 放在win32.cpp里初始化和free吧
+
+10. 把光照集合成一个结构体
+
+11.加入环境光
+
+12.镜面光
+
+13.phong -> blin-phong halfway-vector
