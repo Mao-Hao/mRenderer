@@ -129,3 +129,9 @@ float mModel::specular( Vec2f _uv )
     Vec2i uv( _uv[0] * specularMap.width, _uv[1] * specularMap.width );
     return specularMap.getColor( uv[0], uv[1] )[2] / 255.f;
 }
+
+mColor mModel::getSpecularColor( Vec2f _uv )
+{
+    Vec2i uv( _uv[0] * specularMap.width, _uv[1] * specularMap.width );
+    return proj<3>(specularMap.getColor( uv[0], uv[1] ));
+}

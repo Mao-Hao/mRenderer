@@ -6,6 +6,17 @@
 #include "mShader.h"
 #include <array>
 
+typedef struct
+{
+    Vec3f lightPos;
+    mColor lightColor;
+
+    Vec3f ambient;
+    Vec3f diffuse;
+    Vec3f specular;
+} Light;
+
+
 class Shader_1 : public mShader
 {
 public:
@@ -14,6 +25,7 @@ public:
 
     #pragma region uniforms
     Mat pvm;
+    Light * lightPtr = nullptr;
     Vec3f lightPos = { 3, -3, 3 };  // 需要乘一个light的model矩阵
     mColor lightColor = White;
     Vec3f * cameraPosPtr = nullptr;
@@ -30,7 +42,6 @@ public:
         m = _model; v = _view; p = _proj;
         pvm = p * v * m;
         normalMat = m.invertTranspose().getMinor( 4, 4 );
-        cameraPosPtr = getCameraPos();
     }
 
     #pragma region shaders
@@ -46,7 +57,7 @@ public:
         return vertices;
     }
 
-    virtual bool FrameShader( Vec3f bc, _In_ mColor & color )
+    virtual bool FrameShader( Vec3f bc, _Out_ mColor & color )
     {
         // color
         Vec2f uv = interpolate( texcoords, bc );
@@ -57,22 +68,22 @@ public:
         Vec3f fPos = interpolate( fragPos, bc ).normalize();
         Vec3f n = interpolate( normals, bc ).normalize();
         Vec3f l = proj<3>( lightPos - fPos ).normalize();
-        float diffuseStrength = mMax( 0.0f, n * l );
+        float diffuseStrength = mMax( 0.0f, n * l ) + 0.1;
         mColor diffuseColor = diffColor * diffuseStrength;
 
         // specular
-        float specularStrength = 0.6f;
+        float specularStrength = 0.5;
         Vec3f viewDir = ( *cameraPosPtr - fPos ).normalize();
         Vec3f r = reflect( -l, n ).normalize();
         float specular = pow( mMax( ( viewDir * r ), 0.0f ), 32 );
         mColor specularColor = specColor * specularStrength * specular;
 
-        color = diffuseColor + specularColor;
+        color = diffuseColor ;
         return false;
     }
     #pragma endregion shaders
 
 public:
-    Shader_1() {}
+    Shader_1() { cameraPosPtr = getCameraPos(); }
     ~Shader_1() {}
 };

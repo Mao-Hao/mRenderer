@@ -3,17 +3,17 @@
 #include <cstdlib>
 #include <type_traits>
 
-// DEBUG
-#include <iostream>
-using std::cout;
-//
-
 using uchar     = unsigned char;
 using uint      = unsigned int;
 using ulong     = unsigned long;
 using rawColor  = uint;             // 4×Ö½Ú
 
 #define mNDebug
+
+#ifdef mNDebug
+#include <iostream>
+using std::cout;
+#endif
 
 #ifndef mNDebug
 #define mAssert(exp)    do { if(!(exp)) {fprintf(stderr, " - AF: %s; %s:%d\n", #exp, __FILE__, __LINE__); }} while(0)
@@ -56,7 +56,3 @@ constexpr bool is_double() { return is_same<std::decay<T>::type, double>(); }
 
 template <typename T> 
 constexpr bool is_rawColor() { return is_same<std::decay<T>::type, rawColor>(); }
-
-
-
-

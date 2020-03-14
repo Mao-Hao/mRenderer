@@ -133,9 +133,15 @@ int mInitWindow()
 
     mDevice::framebuffer = (uint **)malloc( w * h * 4 );
     for ( int i = 0; i < h; i++ )
-        mDevice::framebuffer[i] = (uint *)( (uchar *)ptr + w * 4 * i );
+        mDevice::framebuffer[i] = (uint *)( (char *)ptr + w * 4 * i );
 
-    // todo zbuffer
+    mDevice::zbuffer = (float **)malloc( (size_t)w * h * sizeof( float ) );
+    float ** p = (float **)malloc( (size_t)w * h * sizeof( float ) );
+    if ( mDevice::zbuffer == nullptr || p == nullptr )   exit( -1 );
+
+    memset( p, 0, (size_t)w * h * sizeof( float ) );
+    for ( int i = 0; i < h; i++ )
+        mDevice::zbuffer[i] = (float *)( (char *)p + (size_t)w * sizeof( float ) * i );
 
     return 0;
 }
@@ -166,7 +172,8 @@ void destroyWindow()
     DestroyWindow( hwnd );
 
     free( mDevice::framebuffer );
-    // todo: free zbuffer
+    free( mDevice::zbuffer[0] );
+    free( mDevice::zbuffer );
 }
 
 bool windowShouldClose()

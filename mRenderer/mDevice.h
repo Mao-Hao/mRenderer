@@ -39,10 +39,10 @@ inline bool outOfRange( T v, T lo, T hi )
 class mDevice
 {
 public:
-    inline static int          width = 800;
-    inline static int          height = 800;
-    inline static uint      ** framebuffer = nullptr;
-    inline static float     ** zbuffer = nullptr;
+    inline static const int          width = 600;
+    inline static const int          height = 480;
+    inline static uint ** framebuffer = nullptr;
+    inline static float ** zbuffer = nullptr;
     inline static bool         keys[(uint)KeyCode::KEY_NUM];
     inline static bool         btns[(uint)MouseBtn::BTN_NUM];
     inline static CallbackFunc callbackfuncs;
@@ -50,52 +50,60 @@ public:
     // inline
     static __forceinline void setPixel( int x, int y, mColor c )
     {
-        mAssert(x >= 0); mAssert(x < width);
-        mAssert(y >= 0); mAssert(y < height);
+        mAssert( x >= 0 ); mAssert( x < width );
+        mAssert( y >= 0 ); mAssert( y < height );
         #ifndef mNDebug
         if ( x >= 0 && x < width && y >= 0 && y < height )
-        #endif
+            #endif
             framebuffer[y][x] = toRawColor( c );
     }
+
     static void setPixel_rc( int x, int y, rawColor c = 0xffffff )
     {
         mAssert( x >= 0 ); mAssert( x < width );
         mAssert( y >= 0 ); mAssert( y < height );
         #ifndef mNDebug
         if ( x >= 0 && x < width && y >= 0 && y < height )
-        #endif
+            #endif
             framebuffer[y][x] = c;
     }
+
     static mColor getColor( int x, int y )
     {
         mAssert( x >= 0 ); mAssert( x < width );
         mAssert( y >= 0 ); mAssert( y < height );
         return toMColor( framebuffer[y][x] );
     }
+
     static rawColor getRawColor( int x, int y )
     {
         mAssert( x >= 0 ); mAssert( x < width );
         mAssert( y >= 0 ); mAssert( y < height );
         return framebuffer[y][x];
     }
+
     static bool isKeyPressed( KeyCode key )
     {
         return keys[(uint)key];
     }
+
     static bool isBtnPressed( MouseBtn btn )
     {
         return btns[(uint)btn];
     }
+
+    // framebuffer
+    static __forceinline void freshFrameBuffer()
+    {
+        memset( framebuffer[0], 0, (size_t)width * height * sizeof( uint ) );
+    }
+
     // zbuffer
     static void mInitZbuffer()
     {
-        mDevice::zbuffer = new float * [mDevice::height];
-        for ( int i = 0; i < mDevice::width; i++ )
-            mDevice::zbuffer[i] = new float[mDevice::width];
-        for ( int i = 0; i < mDevice::height; i++ )
-            for ( int j = 0; j < mDevice::width; j++ )
-                mDevice::zbuffer[i][j] = .0f;
+
     }
+
     // z越小，离摄像机越近 大的z表示该物体在前面 false -> discard
     static __forceinline bool mZTest( int x, int y, float & z )
     {
@@ -105,17 +113,10 @@ public:
         }
         return false;
     }
-    // 待优化
-    static void freshZBuffer()
+
+    static __forceinline void freshZBuffer()
     {
-        //#pragma loop(hint_parallel(0))
-        for ( int i = 0; i < mDevice::height; i++ )
-            for ( int j = 0; j < mDevice::width; j++ )
-                mDevice::zbuffer[i][j] = .0f;
-    }
-    static void mDestroyZBuffer()
-    {
-        delete[]mDevice::zbuffer;
+        memset( zbuffer[0], 0, (size_t)width * height * sizeof( float ) );
     }
 private:
     mDevice() = delete;
