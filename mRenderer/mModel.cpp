@@ -31,7 +31,7 @@ mModel::mModel( const char * path, float sz ) : modelPath( path )
             iss >> trash >> trash;
             Vec2f uv;
             for ( int i = 0; i < 2; i++ ) iss >> uv[i];
-            texcoord.push_back( uv );
+            texcoords.push_back( uv );
         }
         else if ( !line.compare( 0, 2, "f " ) ) {
             vector<Vec3i> f;
@@ -101,7 +101,7 @@ std::array<int, 3> mModel::getFace( int index )
 
 Vec2f mModel::getTexcoord( int faceIndex, int vertIndex )
 {
-    return texcoord[faces[faceIndex][vertIndex][1]];
+    return texcoords[faces[faceIndex][vertIndex][1]];
 }
 
 Vec3f mModel::getNormal( int faceIndex, int vertIndex )

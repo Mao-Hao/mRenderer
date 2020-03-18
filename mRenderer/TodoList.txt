@@ -20,8 +20,10 @@
 
 10. 把光照集合成一个结构体
 
-11.加入环境光
+11.加入环境光 done
 
-12.镜面光
+12.镜面光 done
 
 13.phong -> blin-phong halfway-vector
+
+14.testVS 改名整理

@@ -29,6 +29,9 @@
     <Filter Include="testCases\test_1">
       <UniqueIdentifier>{c8f901fe-eaf1-4ee4-bdfc-b9aca45fd7b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="testCases\test_2">
+      <UniqueIdentifier>{1eafb7ac-bc75-40e9-ab65-154b59d0c448}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="win32.h">
@@ -67,9 +70,6 @@
     <ClInclude Include="mTexture.h">
       <Filter>base\header</Filter>
     </ClInclude>
-    <ClInclude Include="testNormal.h">
-      <Filter>testCases</Filter>
-    </ClInclude>
     <ClInclude Include="mShader.h">
       <Filter>shader</Filter>
     </ClInclude>
@@ -82,11 +82,17 @@
     <ClInclude Include="testOCH.h">
       <Filter>testCases</Filter>
     </ClInclude>
-    <ClInclude Include="testVS.h">
-      <Filter>testCases\test_1</Filter>
-    </ClInclude>
     <ClInclude Include="Shader_1.h">
       <Filter>testCases\test_1</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader_2.h">
+      <Filter>testCases\test_2</Filter>
+    </ClInclude>
+    <ClInclude Include="test_1_phong.h">
+      <Filter>testCases\test_1</Filter>
+    </ClInclude>
+    <ClInclude Include="test_2_shadow.h">
+      <Filter>testCases\test_2</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -105,9 +111,6 @@
     <ClCompile Include="mFPSCameraHelper.cpp">
       <Filter>helper</Filter>
     </ClCompile>
-    <ClCompile Include="testNormal.cpp">
-      <Filter>testCases</Filter>
-    </ClCompile>
     <ClCompile Include="mOrbitalCameraHelper.cpp">
       <Filter>helper</Filter>
     </ClCompile>
@@ -118,11 +121,14 @@
       <Filter>testCases</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="testVS.cpp">
+    <ClCompile Include="modelPreproccessor.h">
+      <Filter>testCases</Filter>
+    </ClCompile>
+    <ClCompile Include="test_1_phong.cpp">
       <Filter>testCases\test_1</Filter>
     </ClCompile>
-    <ClCompile Include="modelPreproccessor.h">
-      <Filter>testCases\test_1</Filter>
+    <ClCompile Include="test_2_shadow.cpp">
+      <Filter>testCases\test_2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

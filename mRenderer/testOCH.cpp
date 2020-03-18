@@ -26,7 +26,7 @@ int testOCH( int argc, char * argv[] )
 
     mDevice::mInitZbuffer();
 
-    Shader_1 * shader = new Shader_1;
+    Shader_1_phong * shader = new Shader_1_phong;
 
     vector<mModel> models;
     auto m = mModel( "obj/african_head/african_head.obj" );

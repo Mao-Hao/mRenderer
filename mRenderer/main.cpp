@@ -2,24 +2,23 @@
 #include <string>
 #include <functional>
 #include "testOCH.h"
-#include "testNormal.h"
-#include "testVS.h"
+#include "test_2_shadow.h"
+#include "test_1_phong.h"
 
 using std::unordered_map;
 using std::string;
 using std::function;
 
 unordered_map<string, function<int( int, char * [] )>> testCase = {
-    {"Orbital", testOCH},
-    {"Normal", testNormal},
-    {"VertexShader", testVS}
+    {"Orbital", testOCH},    
+    {"phong", test_1_phong},
+    {"shadow", test_2_shadow}
 };
 
 int main( int argc, char * argv[] )
 {
-    auto testFunc = testCase.at("VertexShader");
-    //auto testFunc = testCase.at( "Orbital" );
+    //auto testFunc = testCase.at("phong");
+    auto testFunc = testCase.at( "shadow" );
     testFunc( argc, argv );
-
     return 0;
 }

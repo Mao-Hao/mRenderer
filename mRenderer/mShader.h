@@ -12,11 +12,12 @@ public:
     #pragma region varyings
     std::array<Vec4f, 3> vertices;
     std::array<Vec2f, 3> texcoords;
+    Vec2f _uv;
     #pragma endregion varyings
 
     #pragma region shaders
     virtual std::array<Vec4f, 3> VertexShader( int faceIndex ) = 0;
     // true -> discard
-    virtual bool FrameShader( Vec3f bc, _Out_ Vec3f & color ) = 0;   
+    virtual bool FrameShader( Vec3f bc, _Out_ Vec3f & color) = 0;   
     #pragma endregion shaders
 };

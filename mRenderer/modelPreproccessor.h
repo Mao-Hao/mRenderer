@@ -38,7 +38,18 @@ inline std::vector<mModel *> loadModels( const char * name )
         m->bindTexture( m->specularMap, "_spec.tga" );
         models.push_back( m );
     }
+    else if ( name == "box" ) {
+        auto m = new mModel( "obj/box/box.obj" );
+        m->bindTexture( m->diffuseMap, "_diff.tga" );
+        models.push_back( m );
 
+    }
+    else if ( name == "floor" ) {
+        auto m = new mModel( "obj/floor/floor.obj" );
+        m->bindTexture( m->diffuseMap, "_diffuse.tga" );
+        models.push_back( m );
+
+    }
 
 
     return models;

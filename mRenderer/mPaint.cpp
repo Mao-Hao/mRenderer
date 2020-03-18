@@ -113,12 +113,13 @@ void mRasterize( mShader * shader, int faceIndex )
 
     if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
 
+    if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+
     for ( auto & v : PNTS ) {
         v = vp * v;
         float inW = 1.0f / v.w;
         v = { v.x * inW, v.y * inW, v.z * inW, inW };
     }
-    if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
     // 包围盒 max, min 
     float xmin = mMax( 0.0f, mMin3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
     float ymin = mMax( 0.0f, mMin3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
@@ -142,11 +143,20 @@ void mRasterize( mShader * shader, int faceIndex )
             if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
                  && ( beta > 0 || Fbeta * F( PNTS[2], PNTS[0], -1, -1 ) )
                  && ( gamma > 0 || Fgamma * F( PNTS[0], PNTS[1], -1, -1 ) ) ) {
+
                 z = PNTS[0].z * alpha + PNTS[1].z * beta + PNTS[2].z * gamma;
-                z = ( 1.0f / z - invZNear ) / ( invDZFN );
+                //z = 1.0f / ( alpha / PNTS[0].z + beta / PNTS[1].z + gamma / PNTS[2].z );
+                //z = ( 1.0f / z - invZNear ) / ( invDZFN );
                 w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
                 z *= w;
                 if ( mDevice::mZTest( x, y, z ) ) {
+                    //shader->_uv = ( shader->texcoords[0] * alpha / PNTS[0].z +
+                    //                   shader->texcoords[1] * beta / PNTS[1].z +
+                    //                   shader->texcoords[2] * gamma / PNTS[2].z ) * z;
+                    shader->_uv = ( shader->texcoords[0] * alpha * PNTS[0].w +
+                                    shader->texcoords[1] * beta * PNTS[1].w +
+                                    shader->texcoords[2] * gamma * PNTS[2].w ) / w;
+
                     if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
                         mDevice::setPixel( x, y, mc );
                     }

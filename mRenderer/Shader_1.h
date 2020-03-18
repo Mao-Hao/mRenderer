@@ -1,4 +1,5 @@
 #pragma once
+// π‚’’Ã˘Õº£¨Œﬁ“ı”∞
 #include "mMath.hpp"
 #include "mModel.h"
 #include "mColor.h"
@@ -17,7 +18,7 @@ typedef struct
 } Light;
 
 
-class Shader_1 : public mShader
+class Shader_1_phong : public mShader
 {
 public:
     mModel * model = nullptr;
@@ -42,6 +43,10 @@ public:
         m = _model; v = _view; p = _proj;
         pvm = p * v * m;
         normalMat = m.invertTranspose().getMinor( 4, 4 );
+    }
+    void setLight( Light * _lightPtr )
+    {
+        lightPtr = _lightPtr;
     }
 
     #pragma region shaders
@@ -78,12 +83,12 @@ public:
         float specular = pow( mMax( ( viewDir * r ), 0.0f ), 32 );
         mColor specularColor = specColor * specularStrength * specular;
 
-        color = diffuseColor ;
+        color = diffuseColor + specularColor;
         return false;
     }
     #pragma endregion shaders
 
 public:
-    Shader_1() { cameraPosPtr = getCameraPos(); }
-    ~Shader_1() {}
+    Shader_1_phong() { cameraPosPtr = getCameraPos(); }
+    ~Shader_1_phong() {}
 };

@@ -14,7 +14,7 @@ public:
     // зЂвт Vec3i (x: vertex, y: uv, z: normal) 
     std::vector<std::vector<Vec3i>> faces;
     std::vector<Vec3f> normals;
-    std::vector<Vec2f> texcoord;    // uv
+    std::vector<Vec2f> texcoords;    // uv
     mTGATexture diffuseMap;
     mTGATexture normalMap;
     mTGATexture specularMap;
