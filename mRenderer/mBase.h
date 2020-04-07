@@ -8,14 +8,14 @@ using uint      = unsigned int;
 using ulong     = unsigned long;
 using rawColor  = uint;             // 4×Ö½Ú
 
-#define mNDebug
+//#define mNDebug
 
 #ifdef mNDebug
 #include <iostream>
 using std::cout;
 #endif
 
-#ifndef mNDebug
+#ifdef mNDebug
 #define mAssert(exp)    do { if(!(exp)) {fprintf(stderr, " - AF: %s; %s:%d\n", #exp, __FILE__, __LINE__); }} while(0)
 #define mError(info)    do { fprintf(stderr, " - %s:%d  Info:%s\n", __FILE__, __LINE__, info); abort();} while(0)
 #else

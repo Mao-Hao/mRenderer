@@ -54,7 +54,7 @@ public:
         mAssert( y >= 0 ); mAssert( y < height );
         #ifndef mNDebug
         if ( x >= 0 && x < width && y >= 0 && y < height )
-            #endif
+        #endif
             framebuffer[y][x] = toRawColor( c );
     }
 

@@ -17,8 +17,8 @@ unordered_map<string, function<int( int, char * [] )>> testCase = {
 
 int main( int argc, char * argv[] )
 {
-    //auto testFunc = testCase.at("phong");
-    auto testFunc = testCase.at( "shadow" );
+    auto testFunc = testCase.at("phong");
+    //auto testFunc = testCase.at( "shadow" );
     testFunc( argc, argv );
     return 0;
 }

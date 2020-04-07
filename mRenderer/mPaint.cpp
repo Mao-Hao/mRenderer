@@ -29,7 +29,7 @@ static inline Vec2i NDC2Screen( Vec3f p )
     return Vec2i( ( p.x ) * mDevice::width, ( p.y ) * mDevice::height );
 }
 
-void line( Vec2i & p0, Vec2i & p1, mColor mc )
+void line( Vec2i p0, Vec2i p1, mColor mc )
 {
     int x0 = p0.x, x1 = p1.x;
     int y0 = p0.y, y1 = p1.y;
@@ -67,58 +67,20 @@ void mLine( mPoint2D & p0, mPoint2D & p1 )
     }
 }
 
-void mTriangle( mPoint2D & A, mPoint2D & B, mPoint2D & C )
-{
-    if ( A.p.y == B.p.y && A.p.y == C.p.y )   return; // 退化三角形
-    // 包围盒 max, min 
-    int xmin = mMax( 0, mMin3( A.p.x, B.p.x, C.p.x ) );
-    int ymin = mMax( 0, mMin3( A.p.y, B.p.y, C.p.y ) );
-    int xmax = mMin( mDevice::width, mMax3( A.p.x, B.p.x, C.p.x ) );
-    int ymax = mMin( mDevice::height, mMax3( A.p.y, B.p.y, C.p.y ) );
-
-    // 注意带参宏的展开方式，若前有参数 x，则每个 x 都会被识别为参数
-    #define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
-    float Falpha = F( B.p, C.p, A.p.x, A.p.y );
-    float Fbeta = F( C.p, A.p, B.p.x, B.p.y );
-    float Fgamma = F( A.p, B.p, C.p.x, C.p.y );
-    float alpha, beta, gamma;
-    mColor mc = White;
-    for ( int y = ymin; y < ymax; y++ )
-        for ( int x = xmin; x < xmax; x++ ) {
-            alpha = F( B.p, C.p, x, y ) / Falpha;
-            if ( alpha < 0 )  continue;
-            beta = F( C.p, A.p, x, y ) / Fbeta;
-            //gamma = 1 - alpha - beta; // 存在误差
-            gamma = F( A.p, B.p, x, y ) / Fgamma;
-            // 改为 < 和 || continue 更好
-            if ( alpha >= 0 && beta >= 0 && gamma >= 0 ) {
-                if ( ( alpha > 0 || Falpha * F( B.p, C.p, -1, -1 ) ) &&
-                    ( beta > 0 || Fbeta * F( C.p, A.p, -1, -1 ) ) &&
-                     ( gamma > 0 || Fgamma * F( A.p, B.p, -1, -1 ) ) ) {
-                    mc = A.mc * alpha + B.mc * beta + C.mc * gamma;
-                    mDevice::setPixel( x, y, mc );
-                }
-            }
-        }
-    #undef F(A, B, X, Y)
-}
-
 
 // alis
 #define PNTS    shader->vertices
+#define TEXS    shader->texcoords
 #define F(A, B, X, Y) ((A##.y-B##.y)*X + (B##.x-A##.x)*Y + A##.x*B##.y - B##.x*A##.y)
 void mRasterize( mShader * shader, int faceIndex )
 {
     shader->VertexShader( faceIndex );
-
-    if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
-
-    if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
-
-    for ( auto & v : PNTS ) {
-        v = vp * v;
-        float inW = 1.0f / v.w;
-        v = { v.x * inW, v.y * inW, v.z * inW, inW };
+    //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
+    //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+    for ( auto & pnt : PNTS ) {
+        pnt = vp * pnt;
+        float inW = 1.0f / pnt.w;
+        pnt = { pnt.x * inW, pnt.y * inW, pnt.z * inW, inW };
     }
     // 包围盒 max, min 
     float xmin = mMax( 0.0f, mMin3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
@@ -131,7 +93,6 @@ void mRasterize( mShader * shader, int faceIndex )
     float Fgamma = F( PNTS[0], PNTS[1], PNTS[2].x, PNTS[2].y );
     float alpha, beta, gamma, z, w;
     mColor mc = White;
-
     for ( int y = ymin; y < ymax; y++ ) {
         for ( int x = xmin; x < xmax; x++ ) {
             alpha = F( PNTS[1], PNTS[2], x, y ) / Falpha;
@@ -143,21 +104,15 @@ void mRasterize( mShader * shader, int faceIndex )
             if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
                  && ( beta > 0 || Fbeta * F( PNTS[2], PNTS[0], -1, -1 ) )
                  && ( gamma > 0 || Fgamma * F( PNTS[0], PNTS[1], -1, -1 ) ) ) {
-
                 z = PNTS[0].z * alpha + PNTS[1].z * beta + PNTS[2].z * gamma;
                 //z = 1.0f / ( alpha / PNTS[0].z + beta / PNTS[1].z + gamma / PNTS[2].z );
                 //z = ( 1.0f / z - invZNear ) / ( invDZFN );
                 w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
                 z *= w;
                 if ( mDevice::mZTest( x, y, z ) ) {
-                    //shader->_uv = ( shader->texcoords[0] * alpha / PNTS[0].z +
-                    //                   shader->texcoords[1] * beta / PNTS[1].z +
-                    //                   shader->texcoords[2] * gamma / PNTS[2].z ) * z;
-                    shader->_uv = ( shader->texcoords[0] * alpha * PNTS[0].w +
-                                    shader->texcoords[1] * beta * PNTS[1].w +
-                                    shader->texcoords[2] * gamma * PNTS[2].w ) / w;
-
+                    shader->uv = ( TEXS[0] * alpha * PNTS[0].w + TEXS[1] * beta * PNTS[1].w + TEXS[2] * gamma * PNTS[2].w ) / w;
                     if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
+                        //mc = Vec3f(mDevice::zbuffer[y][x], mDevice::zbuffer[y][x] , mDevice::zbuffer[y][x] );
                         mDevice::setPixel( x, y, mc );
                     }
                 }
@@ -165,5 +120,158 @@ void mRasterize( mShader * shader, int faceIndex )
         }
     }
 }
+
+
+
+// 设计目的
+// 1. 需要增加阴影， mRasterize 实现困难。问题有关数据通信(shadowbuffer和shadowshader之间)
+// 2. 需要兼容多种渲染模式，比如线框，这需要不同的 mRasterize
+//      那么，如何获得不同版本的 mRasterize 呢？
+//          想法一，使用宏，将有区别的定义放到宏里面，编译器生成唯一的一个 mRasterize
+//          想法二，用函数指针，指向不同定义的 mRasterize
+//          想法三，用工厂类
+//          想法四，偏特化
+
+template <RenderMode M>
+void render( mModel * model, mShader * shader ) {}
+
+template <>
+void render<RenderMode::NORMAL>( mModel * model, mShader * shader )
+{
+    for ( int i = 0; i != model->facesSize(); i++ ) {
+        shader->VertexShader( i );
+        //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
+        //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+        for ( auto & pnt : PNTS ) {
+            pnt = vp * pnt;
+            float inW = 1.0f / pnt.w;
+            pnt = { pnt.x * inW, pnt.y * inW, pnt.z * inW, inW };
+        }
+        // 包围盒 max, min 
+        float xmin = mMax( 0.0f, mMin3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
+        float ymin = mMax( 0.0f, mMin3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
+        float xmax = mMin( (float)mDevice::width, mMax3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
+        float ymax = mMin( (float)mDevice::height, mMax3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
+
+        float Falpha = F( PNTS[1], PNTS[2], PNTS[0].x, PNTS[0].y );
+        float Fbeta = F( PNTS[2], PNTS[0], PNTS[1].x, PNTS[1].y );
+        float Fgamma = F( PNTS[0], PNTS[1], PNTS[2].x, PNTS[2].y );
+        float alpha, beta, gamma, z, w;
+        mColor mc = White;
+        for ( int y = ymin; y < ymax; y++ ) {
+            for ( int x = xmin; x < xmax; x++ ) {
+                alpha = F( PNTS[1], PNTS[2], x, y ) / Falpha;
+                if ( alpha < 0 )                continue;   // 提前减枝
+                beta = F( PNTS[2], PNTS[0], x, y ) / Fbeta;
+                //gamma = F( PNTS[0], PNTS[1], x, y ) / Fgamma;
+                gamma = 1 - alpha - beta; // 存在误差 // 貌似效率提高不大
+                if ( beta < 0 || gamma < 0 )    continue;
+                if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
+                     && ( beta > 0 || Fbeta * F( PNTS[2], PNTS[0], -1, -1 ) )
+                     && ( gamma > 0 || Fgamma * F( PNTS[0], PNTS[1], -1, -1 ) ) ) {
+                    z = PNTS[0].z * alpha + PNTS[1].z * beta + PNTS[2].z * gamma;
+                    //z = 1.0f / ( alpha / PNTS[0].z + beta / PNTS[1].z + gamma / PNTS[2].z );
+                    //z = ( 1.0f / z - invZNear ) / ( invDZFN );
+                    w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
+                    z *= w;
+                    if ( mDevice::mZTest( x, y, z ) ) {
+                        // 矫正纹理（用的invW）
+                        shader->uv = ( TEXS[0] * alpha * PNTS[0].w + TEXS[1] * beta * PNTS[1].w + TEXS[2] * gamma * PNTS[2].w ) / w;
+                        if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
+                            //mc = Vec3f(mDevice::zbuffer[y][x], mDevice::zbuffer[y][x] , mDevice::zbuffer[y][x] );
+                            mDevice::setPixel( x, y, mc );
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+template <>
+void render<RenderMode::POINTS>( mModel * model, mShader * shader )
+{
+    mColor mc = White;
+    for ( int i = 0; i != model->facesSize(); i++ ) {
+        shader->VertexShader( i );
+        for ( int j = 0; j < 3; j++ ) {
+            if ( mClip( PNTS[j] ) )   continue;
+            PNTS[j] = vp * PNTS[j];
+            float inW = 1.0f / PNTS[j].w;
+            PNTS[j] = { PNTS[j].x * inW, PNTS[j].y * inW, PNTS[j].z * inW, inW };
+            mDevice::setPixel( PNTS[j].x, PNTS[j].y, mc );
+        }
+    }
+}
+
+// TODO, 插值版本
+template <>
+void render<RenderMode::WIRE_FRAME>( mModel * model, mShader * shader )
+{
+    mColor mc = White;
+    for ( int i = 0; i != model->facesSize(); i++ ) {
+        shader->VertexShader( i );
+        // TODO 裁剪，重新写，判断与边框的交点
+        if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   continue;
+        for ( auto & pnt : PNTS ) {
+            pnt = vp * pnt;
+            float inW = 1.0f / pnt.w;
+            pnt = { pnt.x * inW, pnt.y * inW, pnt.z * inW, inW };
+        }
+        line( proj<2>( PNTS[0] ), proj<2>( PNTS[1] ) );
+        line( proj<2>( PNTS[0] ), proj<2>( PNTS[2] ) );
+        line( proj<2>( PNTS[1] ), proj<2>( PNTS[2] ) );
+    }
+}
+
+template <>
+void render<RenderMode::DEPTH>( mModel * model, mShader * shader )
+{
+    for ( int i = 0; i != model->facesSize(); i++ ) {
+        shader->VertexShader( i );
+        //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
+        //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+        for ( auto & pnt : PNTS ) {
+            pnt = vp * pnt;
+            float inW = 1.0f / pnt.w;
+            pnt = { pnt.x * inW, pnt.y * inW, pnt.z * inW, inW };
+        } 
+        float xmin = mMax( 0.0f, mMin3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
+        float ymin = mMax( 0.0f, mMin3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
+        float xmax = mMin( (float)mDevice::width, mMax3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
+        float ymax = mMin( (float)mDevice::height, mMax3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
+
+        float Falpha = F( PNTS[1], PNTS[2], PNTS[0].x, PNTS[0].y );
+        float Fbeta = F( PNTS[2], PNTS[0], PNTS[1].x, PNTS[1].y );
+        float Fgamma = F( PNTS[0], PNTS[1], PNTS[2].x, PNTS[2].y );
+        float alpha, beta, gamma, z, w;
+        mColor mc = White;
+        for ( int y = ymin; y < ymax; y++ ) {
+            for ( int x = xmin; x < xmax; x++ ) {
+                alpha = F( PNTS[1], PNTS[2], x, y ) / Falpha;
+                if ( alpha < 0 )                continue;
+                beta = F( PNTS[2], PNTS[0], x, y ) / Fbeta;
+                gamma = 1 - alpha - beta;
+                if ( beta < 0 || gamma < 0 )    continue;
+                if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
+                     && ( beta > 0 || Fbeta * F( PNTS[2], PNTS[0], -1, -1 ) )
+                     && ( gamma > 0 || Fgamma * F( PNTS[0], PNTS[1], -1, -1 ) ) ) {
+                    z = PNTS[0].z * alpha + PNTS[1].z * beta + PNTS[2].z * gamma;
+                    w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
+                    z *= w;
+                    //z = ( 1.0f / z - invZNear ) / ( invDZFN );
+                    if ( mDevice::mZTest( x, y, z ) ) {
+                        if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
+                            mc = Vec3f(mDevice::zbuffer[y][x], mDevice::zbuffer[y][x] , mDevice::zbuffer[y][x] );
+                            mDevice::setPixel( x, y, mc );
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 #undef PNTS
+#undef TEXS
 #undef F(A, B, X, Y)

@@ -12,7 +12,7 @@ public:
     #pragma region varyings
     std::array<Vec4f, 3> vertices;
     std::array<Vec2f, 3> texcoords;
-    Vec2f _uv;
+    Vec2f uv;
     #pragma endregion varyings
 
     #pragma region shaders

@@ -32,7 +32,7 @@ int test_2_shadow( int argc, char * argv[] )
     float prev = (float)getNativeTime();
     while ( !mDevice::isKeyPressed( KeyCode::ESC ) ) {
         float curr = (float)getNativeTime();
-        cout << ( curr - prev ) * 1000 << '\n';
+        std::cout << ( curr - prev ) * 1000 << '\n';
         setRecordsTime( prev, curr );
         prev = curr;
 

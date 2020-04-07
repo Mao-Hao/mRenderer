@@ -65,8 +65,6 @@ public:
     virtual bool FrameShader( Vec3f bc, _Out_ mColor & color )
     {
         // color
-        //Vec2f uv = interpolate( texcoords, bc );
-        Vec2f uv = _uv;
         mColor diffColor = model->diffuse( uv );
         mColor specColor = White * model->specular( uv );
 

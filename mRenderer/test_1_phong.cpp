@@ -28,11 +28,11 @@ int test_1_phong( int argc, char * argv[] )
     Shader_1_phong * shader = new Shader_1_phong;
 
     vector<mModel *> models = loadModels("assassin");
-
+    //vector<mModel *> models = loadModels( "box" );
     float prev = (float)getNativeTime();
     while ( !mDevice::isKeyPressed( KeyCode::ESC ) ) {
         float curr = (float)getNativeTime();
-        cout << ( curr - prev ) * 1000 << '\n';
+        std::cout << ( curr - prev ) * 1000 << '\n';
         setRecordsTime( prev, curr );
         prev = curr;
 
@@ -47,9 +47,8 @@ int test_1_phong( int argc, char * argv[] )
 
         for ( auto & model : models ) {
             shader->setModel( model );
-            for ( size_t i = 0; i != model->facesSize(); i++ ) {
-                mRasterize( shader, i );
-            }
+            render<RenderMode::NORMAL>(model, shader);
+
         }
 
         //--end--
