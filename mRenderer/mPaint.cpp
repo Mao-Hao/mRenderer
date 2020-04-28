@@ -67,6 +67,15 @@ void mLine( mPoint2D & p0, mPoint2D & p1 )
     }
 }
 
+static inline bool isBackFace( std::array<Vec4f, 3> vertices )
+{
+    auto a = proj<3>( vertices[0] );
+    auto b = proj<3>( vertices[1] );
+    auto c = proj<3>( vertices[2] );
+    auto ab = b - a;
+    auto ac = c - a;
+    return (cross(ab, ac).z >= 0);
+}
 
 // alis
 #define PNTS    shader->vertices
@@ -75,8 +84,9 @@ void mLine( mPoint2D & p0, mPoint2D & p1 )
 void mRasterize( mShader * shader, int faceIndex )
 {
     shader->VertexShader( faceIndex );
-    //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
-    //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+    //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   continue;
+    //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   continue;     // 退化三角形
+    //if ( isBackFace( PNTS ) )     continue;
     for ( auto & pnt : PNTS ) {
         pnt = vp * pnt;
         float inW = 1.0f / pnt.w;
@@ -122,7 +132,6 @@ void mRasterize( mShader * shader, int faceIndex )
 }
 
 
-
 // 设计目的
 // 1. 需要增加阴影， mRasterize 实现困难。问题有关数据通信(shadowbuffer和shadowshader之间)
 // 2. 需要兼容多种渲染模式，比如线框，这需要不同的 mRasterize
@@ -140,8 +149,10 @@ void render<RenderMode::NORMAL>( mModel * model, mShader * shader )
 {
     for ( int i = 0; i != model->facesSize(); i++ ) {
         shader->VertexShader( i );
-        //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
-        //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+        shader->GeometryShader();
+        if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   continue;
+        if ( isBackFace(PNTS) )     continue;
+
         for ( auto & pnt : PNTS ) {
             pnt = vp * pnt;
             float inW = 1.0f / pnt.w;
@@ -164,21 +175,18 @@ void render<RenderMode::NORMAL>( mModel * model, mShader * shader )
                 if ( alpha < 0 )                continue;   // 提前减枝
                 beta = F( PNTS[2], PNTS[0], x, y ) / Fbeta;
                 //gamma = F( PNTS[0], PNTS[1], x, y ) / Fgamma;
-                gamma = 1 - alpha - beta; // 存在误差 // 貌似效率提高不大
+                gamma = 1 - alpha - beta; // 存在误差
                 if ( beta < 0 || gamma < 0 )    continue;
                 if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
                      && ( beta > 0 || Fbeta * F( PNTS[2], PNTS[0], -1, -1 ) )
                      && ( gamma > 0 || Fgamma * F( PNTS[0], PNTS[1], -1, -1 ) ) ) {
                     z = PNTS[0].z * alpha + PNTS[1].z * beta + PNTS[2].z * gamma;
-                    //z = 1.0f / ( alpha / PNTS[0].z + beta / PNTS[1].z + gamma / PNTS[2].z );
-                    //z = ( 1.0f / z - invZNear ) / ( invDZFN );
                     w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
                     z *= w;
                     if ( mDevice::mZTest( x, y, z ) ) {
                         // 矫正纹理（用的invW）
                         shader->uv = ( TEXS[0] * alpha * PNTS[0].w + TEXS[1] * beta * PNTS[1].w + TEXS[2] * gamma * PNTS[2].w ) / w;
                         if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
-                            //mc = Vec3f(mDevice::zbuffer[y][x], mDevice::zbuffer[y][x] , mDevice::zbuffer[y][x] );
                             mDevice::setPixel( x, y, mc );
                         }
                     }
@@ -229,13 +237,14 @@ void render<RenderMode::DEPTH>( mModel * model, mShader * shader )
 {
     for ( int i = 0; i != model->facesSize(); i++ ) {
         shader->VertexShader( i );
-        //if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
+        if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   return;
         //if ( PNTS[0].y == PNTS[1].y && PNTS[0].y == PNTS[2].y )   return;     // 退化三角形
+        if ( isBackFace( PNTS ) )     continue;
         for ( auto & pnt : PNTS ) {
             pnt = vp * pnt;
             float inW = 1.0f / pnt.w;
             pnt = { pnt.x * inW, pnt.y * inW, pnt.z * inW, inW };
-        } 
+        }
         float xmin = mMax( 0.0f, mMin3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
         float ymin = mMax( 0.0f, mMin3( PNTS[0].y, PNTS[1].y, PNTS[2].y ) );
         float xmax = mMin( (float)mDevice::width, mMax3( PNTS[0].x, PNTS[1].x, PNTS[2].x ) );
@@ -262,7 +271,7 @@ void render<RenderMode::DEPTH>( mModel * model, mShader * shader )
                     //z = ( 1.0f / z - invZNear ) / ( invDZFN );
                     if ( mDevice::mZTest( x, y, z ) ) {
                         if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
-                            mc = Vec3f(mDevice::zbuffer[y][x], mDevice::zbuffer[y][x] , mDevice::zbuffer[y][x] );
+                            mc = Vec3f( mDevice::zbuffer[y][x], mDevice::zbuffer[y][x], mDevice::zbuffer[y][x] );
                             mDevice::setPixel( x, y, mc );
                         }
                     }

@@ -36,9 +36,9 @@ int testOCH( int argc, char * argv[] )
     m.bindTexture( m.diffuseMap, "_diffuse.tga" );
     models.push_back( m );
 
-    float prev = getNativeTime();
+    float prev = mGetNativeTime();
     while ( true ) {
-        float curr = getNativeTime();
+        float curr = mGetNativeTime();
         prev = curr;
 
         for ( size_t i = 0; i < mDevice::width; i++ )
@@ -67,7 +67,6 @@ int testOCH( int argc, char * argv[] )
 
         func();
 
-        mDispatch();
         mUpdateWindow();
     }
 

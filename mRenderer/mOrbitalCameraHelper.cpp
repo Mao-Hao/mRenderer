@@ -39,7 +39,7 @@ static OCRecords record = {
 static Vec2f getMousePos()
 {
     float x = -1, y = -1;
-    getCursorPos( x, y );
+    mGetCursorPos( x, y );
     return Vec2f( x, y );
 }
 
@@ -58,7 +58,7 @@ void OCBtnCallback( MouseBtn btn, bool pressed )
 {
     Vec2f cursorPos = getMousePos();
     if ( btn == MouseBtn::L ) {
-        float currTime = (float)getNativeTime();
+        float currTime = (float)mGetNativeTime();
         if ( pressed ) {
             record.isOrbiting = true;
             record.orbitPos = cursorPos;

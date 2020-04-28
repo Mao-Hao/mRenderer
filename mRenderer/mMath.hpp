@@ -16,8 +16,9 @@ const float HalfPi = 1.5707963267f;
 // 以下全是Vec
 //--------------------------------------------------------------------------------------
 // Vec
-template <size_t DIM, typename T> struct vec
+template <size_t DIM, typename T> class vec
 {
+public:
     vec() { for ( size_t i = DIM; i--; data_[i] = T() ); }
     T & operator[]( const size_t i ) { mAssert( i < DIM ); return data_[i]; }
     const T & operator[]( const size_t i ) const { mAssert( i < DIM ); return data_[i]; }
@@ -27,8 +28,9 @@ private:
 
 //--------------------------------------------------------------------------------------
 // vec偏特化 Vec2i/f
-template <typename T> struct vec<2, T>
+template <typename T> class vec<2, T>
 {
+public:
     vec() : x( T() ), y( T() ) {}
     vec( T X, T Y ) : x( X ), y( Y ) {}
     // 类型转换
@@ -60,8 +62,9 @@ template <> template <> inline vec<2, float>::vec( const vec<2, int> & v )
 
 //--------------------------------------------------------------------------------------
 // vec偏特化 Vec3i/f
-template <typename T> struct vec<3, T>
+template <typename T> class vec<3, T>
 {
+public:
     vec() : x( T() ), y( T() ), z( T() ) {}
     vec( T X, T Y, T Z ) : x( X ), y( Y ), z( Z ) {}
     // 类型转换
@@ -92,8 +95,9 @@ template <> template <> inline vec<3, float>::vec( const vec<3, int> & v )
 
 //--------------------------------------------------------------------------------------
 // vec偏特化 Vec4i/f
-template <typename T> struct vec<4, T>
+template <typename T> class vec<4, T>
 {
+public:
     vec() : x( T() ), y( T() ), z( T() ), w( T() ) {}
     vec( T X, T Y, T Z, T W ) : x( X ), y( Y ), z( Z ), w( W ) {}
     // 类型转换
@@ -166,7 +170,7 @@ template<size_t DIM, typename T, typename U> vec<DIM, T> operator/( vec<DIM, T> 
     return lhs;
 }
 
-// 
+// +
 template<size_t LEN, size_t DIM, typename T> vec<LEN, T> embed( const vec<DIM, T> & v, T fill = 1 )
 {
     vec<LEN, T> ret;
@@ -174,6 +178,7 @@ template<size_t LEN, size_t DIM, typename T> vec<LEN, T> embed( const vec<DIM, T
     return ret;
 }
 
+// -
 template<size_t LEN, size_t DIM, typename T> vec<LEN, T> proj( const vec<DIM, T> & v )
 {
     vec<LEN, T> ret;

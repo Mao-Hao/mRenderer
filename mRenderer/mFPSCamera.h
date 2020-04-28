@@ -64,7 +64,7 @@ public:
         pitch += yOffset;
 
         if (constrainPitch)                 pitch = mClamp(pitch, -89.5f, 89.5f);
-
+        
         updateCameraVectors();
     }
 

@@ -50,7 +50,7 @@ static void processCursorMsg()
     //TrackMouseEvent( &tme );
     float xPos = -1;
     float yPos = -1;
-    getCursorPos( xPos, yPos );
+    mGetCursorPos( xPos, yPos );
     if ( mDevice::callbackfuncs.cursorCallback )
         mDevice::callbackfuncs.cursorCallback( xPos, yPos );
 }
@@ -131,9 +131,9 @@ int mInitWindow()
 
     memset( ptr, 0, w * h * 4 );
 
-    mDevice::framebuffer = (uint **)malloc( w * h * 4 );
+    mDevice::framebuffer = (uint **)malloc( w * h * sizeof(uint) );
     for ( int i = 0; i < h; i++ )
-        mDevice::framebuffer[i] = (uint *)( (char *)ptr + w * 4 * i );
+        mDevice::framebuffer[i] = (uint *)( (char *)ptr + w * sizeof( uint ) * i );
 
     mDevice::zbuffer = (float **)malloc( (size_t)w * h * sizeof( float ) );
     float ** p = (float **)malloc( (size_t)w * h * sizeof( float ) );
@@ -164,7 +164,7 @@ void mUpdateWindow()
     mDispatch();
 }
 
-void destroyWindow()
+void mDestroyWindow()
 {
     ShowWindow( hwnd, SW_HIDE );
 
@@ -176,12 +176,12 @@ void destroyWindow()
     free( mDevice::zbuffer );
 }
 
-bool windowShouldClose()
+bool mWindowShouldClose()
 {
     return shouldClose;
 }
 
-void getCursorPos( float & xPos, float & yPos )
+void mGetCursorPos( float & xPos, float & yPos )
 {
     POINT point;
     GetCursorPos( &point );
@@ -191,7 +191,7 @@ void getCursorPos( float & xPos, float & yPos )
 }
 
 //  ver > win95
-double getNativeTime()
+double mGetNativeTime()
 {
     static double period = -1;
     LARGE_INTEGER counter;

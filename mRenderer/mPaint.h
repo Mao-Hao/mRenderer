@@ -16,7 +16,7 @@ void mLine( mPoint2D & p0, mPoint2D & p1 );
 
 void mRasterize( mShader * shader, int faceIndex );
 
-enum class RenderMode { NORMAL, POINTS, WIRE_FRAME, DEPTH, PICK_UP };
+enum class RenderMode { NORMAL, POINTS, WIRE_FRAME, DEPTH };
 template <RenderMode M> void render( mModel * model, mShader * shader );
 template <> void render<RenderMode::NORMAL>( mModel * model, mShader * shader );
 template <> void render<RenderMode::POINTS>( mModel * model, mShader * shader );

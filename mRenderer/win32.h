@@ -11,14 +11,12 @@
 
 int mInitWindow();
 
-void mDispatch();
-
 void mUpdateWindow();
 
-void destroyWindow();
+void mDestroyWindow();
 
-bool windowShouldClose();
+bool mWindowShouldClose();
 
-void getCursorPos(float & xpos, float & ypos);
+void mGetCursorPos(float & xpos, float & ypos);
 
-double getNativeTime();
+double mGetNativeTime();

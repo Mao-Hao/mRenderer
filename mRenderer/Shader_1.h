@@ -26,7 +26,6 @@ public:
 
     #pragma region uniforms
     Mat pvm;
-    Light * lightPtr = nullptr;
     Vec3f lightPos = { 3, -3, 3 };  // 需要乘一个light的model矩阵
     mColor lightColor = White;
     Vec3f * cameraPosPtr = nullptr;
@@ -43,10 +42,6 @@ public:
         m = _model; v = _view; p = _proj;
         pvm = p * v * m;
         normalMat = m.invertTranspose().getMinor( 4, 4 );
-    }
-    void setLight( Light * _lightPtr )
-    {
-        lightPtr = _lightPtr;
     }
 
     #pragma region shaders

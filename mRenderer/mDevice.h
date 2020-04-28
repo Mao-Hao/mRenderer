@@ -39,13 +39,13 @@ inline bool outOfRange( T v, T lo, T hi )
 class mDevice
 {
 public:
-    inline static const int          width = 800;
-    inline static const int          height = 600;
-    inline static uint ** framebuffer = nullptr;
-    inline static float ** zbuffer = nullptr;
-    inline static bool         keys[(uint)KeyCode::KEY_NUM];
-    inline static bool         btns[(uint)MouseBtn::BTN_NUM];
-    inline static CallbackFunc callbackfuncs;
+    inline static const int         width = 800;
+    inline static const int         height = 600;
+    inline static uint           ** framebuffer = nullptr;
+    inline static float          ** zbuffer = nullptr;
+    inline static bool              keys[(uint)KeyCode::KEY_NUM];
+    inline static bool              btns[(uint)MouseBtn::BTN_NUM];
+    inline static CallbackFunc      callbackfuncs;
 
     // inline
     static __forceinline void setPixel( int x, int y, mColor c )

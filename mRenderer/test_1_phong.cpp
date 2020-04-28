@@ -29,9 +29,9 @@ int test_1_phong( int argc, char * argv[] )
 
     vector<mModel *> models = loadModels("assassin");
     //vector<mModel *> models = loadModels( "box" );
-    float prev = (float)getNativeTime();
+    float prev = (float)mGetNativeTime();
     while ( !mDevice::isKeyPressed( KeyCode::ESC ) ) {
-        float curr = (float)getNativeTime();
+        float curr = (float)mGetNativeTime();
         std::cout << ( curr - prev ) * 1000 << '\n';
         setRecordsTime( prev, curr );
         prev = curr;
@@ -53,9 +53,8 @@ int test_1_phong( int argc, char * argv[] )
 
         //--end--
         mDevice::freshZBuffer();
-        mDispatch();
         mUpdateWindow();
     }
-    destroyWindow();
+    mDestroyWindow();
     return 0;
 }

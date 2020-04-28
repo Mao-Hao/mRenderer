@@ -1,8 +1,10 @@
-#pragma once
-#include "mMath.hpp"
-#include <array>
 
-class mShader
+1. 添加几何着色器
+2. 整理RS函数
+
+``` cpp
+template <class Info>
+class mShader : public Info
 {
 public:
     #pragma region uniforms
@@ -17,9 +19,9 @@ public:
 
     #pragma region shaders
     virtual std::array<Vec4f, 3> VertexShader( int faceIndex ) = 0;
-    // Limited
-    virtual void GeometryShader() {}
+    virtual std::array<Vec4f, 3> GeometryShader() = 0;
     // true -> discard
     virtual bool FrameShader( Vec3f bc, _Out_ Vec3f & color ) = 0;
     #pragma endregion shaders
 };
+```

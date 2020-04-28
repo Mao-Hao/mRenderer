@@ -133,6 +133,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\日志\日志.txt" />
-    <Text Include="TodoList.txt" />
+    <Text Include="TodoList.md" />
   </ItemGroup>
 </Project>
