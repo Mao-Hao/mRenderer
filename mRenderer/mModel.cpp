@@ -111,10 +111,13 @@ Vec3f mModel::getNormal( int faceIndex, int vertIndex )
     //return normals[index].normalize();
 }
 
-Vec3f mModel::getNormal( Vec2f _texcoord )
+Vec3f mModel::getNormal( Vec2f _uv )
 {
-    // TODO
-    return Vec3f();
+    Vec2i uv( _uv[0] * normalMap.width, _uv[1] * normalMap.height );
+    auto color = normalMap.getColor( uv[0], uv[1] );
+    // bgra -> rgba
+    return { color.z, color.y, color.x };
+
 }
 
 mColor mModel::diffuse( Vec2f _uv )
@@ -122,7 +125,17 @@ mColor mModel::diffuse( Vec2f _uv )
     Vec2i uv( _uv[0] * diffuseMap.width, _uv[1] * diffuseMap.height );
     auto color = diffuseMap.getColor( uv[0], uv[1] );
     return { color.x, color.y, color.z };
+
 }
+
+const float inv255x2 = 2.f / 255;
+Vec3f mModel::normal( Vec2f _uv )
+{
+    Vec2i uv( _uv[0] * normalMap.width, _uv[1] * normalMap.height );
+    auto color = normalMap.getColor( uv[0], uv[1] );
+    return { color.z * inv255x2 - 1.f, color.y * inv255x2 - 1.f , color.x * inv255x2 - 1.f };
+}
+
 
 float mModel::specular( Vec2f _uv )
 {

@@ -22,4 +22,18 @@ template <> void render<RenderMode::NORMAL>( mModel * model, mShader * shader );
 template <> void render<RenderMode::POINTS>( mModel * model, mShader * shader );
 template <> void render<RenderMode::WIRE_FRAME>( mModel * model, mShader * shader );
 template <> void render<RenderMode::DEPTH>( mModel * model, mShader * shader );
-//template <> void render<RenderMode::PICK_UP>( mModel * model, mShader * shader );
+
+
+struct Culling
+{
+    bool status = false;
+    bool backFace = true;
+};
+
+struct Attrib
+{
+    bool clip = true;
+    Culling culling;
+};
+
+Attrib * getRenderAttrib();

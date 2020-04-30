@@ -38,8 +38,9 @@ public:
     Vec3f getNormal(Vec2f _texcoord);   // TODO
     
     mColor diffuse(Vec2f uv);
-
+    Vec3f normal( Vec2f _uv );
     float specular( Vec2f uvf );
+
     mColor getSpecularColor( Vec2f _uv );
 
     bool loadTexture(const char * path, const char * suffix, mTGATexture & tex);

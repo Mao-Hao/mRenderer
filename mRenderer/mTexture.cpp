@@ -4,18 +4,27 @@
 using namespace std;
 
 mTGATexture::mTGATexture() 
-    : data(nullptr), width(0), height(0), bytesPerPixel(0)
+    : data(nullptr)
+    , width(0)
+    , height(0)
+    , bytesPerPixel(0)
 {}
 
 mTGATexture::mTGATexture(int w, int h, int bpp) 
-    : data(NULL), width(w), height(h), bytesPerPixel(bpp) {
+    : data(NULL)
+    , width(w)
+    , height(h)
+    , bytesPerPixel(bpp) {
     ulong nbytes = width * height * bytesPerPixel;
     data = new uchar[nbytes];
     memset(data, 0, nbytes);
 }
 
 mTGATexture::mTGATexture(const mTGATexture & tex) 
-    : data(NULL), width(tex.width), height(tex.height), bytesPerPixel(tex.bytesPerPixel) {
+    : data(NULL)
+    , width(tex.width)
+    , height(tex.height)
+    , bytesPerPixel(tex.bytesPerPixel) {
     ulong nbytes = width * height * bytesPerPixel;
     data = new uchar[nbytes];
     memcpy(data, tex.data, nbytes);
@@ -135,5 +144,22 @@ bool mTGATexture::loadTGAImage(const char * path) {
     }
     std::cerr << width << "x" << height << "/" << bytesPerPixel * 8 << "\n";
     in.close();
+    return true;
+}
+
+bool mTGATexture::flip_vertically()
+{
+    if ( !data ) return false;
+    unsigned long bytes_per_line = width * bytesPerPixel;
+    unsigned char * line = new unsigned char[bytes_per_line];
+    int half = height >> 1;
+    for ( int j = 0; j < half; j++ ) {
+        unsigned long l1 = j * bytes_per_line;
+        unsigned long l2 = ( height - 1 - j ) * bytes_per_line;
+        memmove( (void *)line, (void *)( data + l1 ), bytes_per_line );
+        memmove( (void *)( data + l1 ), (void *)( data + l2 ), bytes_per_line );
+        memmove( (void *)( data + l2 ), (void *)line, bytes_per_line );
+    }
+    delete[] line;
     return true;
 }

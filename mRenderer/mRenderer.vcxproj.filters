@@ -32,6 +32,9 @@
     <Filter Include="testCases\test_2">
       <UniqueIdentifier>{1eafb7ac-bc75-40e9-ab65-154b59d0c448}</UniqueIdentifier>
     </Filter>
+    <Filter Include="testCases\test_3">
+      <UniqueIdentifier>{4544e2ce-5909-4908-a258-3a0927d28bb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="win32.h">
@@ -79,19 +82,19 @@
     <ClInclude Include="mOrbitalCamera.h">
       <Filter>camera</Filter>
     </ClInclude>
-    <ClInclude Include="testOCH.h">
-      <Filter>testCases</Filter>
-    </ClInclude>
     <ClInclude Include="Shader_1.h">
       <Filter>testCases\test_1</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader_2.h">
-      <Filter>testCases\test_2</Filter>
     </ClInclude>
     <ClInclude Include="test_1_phong.h">
       <Filter>testCases\test_1</Filter>
     </ClInclude>
-    <ClInclude Include="test_2_shadow.h">
+    <ClInclude Include="testOCH.h">
+      <Filter>testCases\test_3</Filter>
+    </ClInclude>
+    <ClInclude Include="test_2_geometry.h">
+      <Filter>testCases\test_2</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader_2.h">
       <Filter>testCases\test_2</Filter>
     </ClInclude>
   </ItemGroup>
@@ -117,9 +120,6 @@
     <ClCompile Include="mOrbitalCamera.cpp">
       <Filter>camera</Filter>
     </ClCompile>
-    <ClCompile Include="testOCH.cpp">
-      <Filter>testCases</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="modelPreproccessor.h">
       <Filter>testCases</Filter>
@@ -127,12 +127,18 @@
     <ClCompile Include="test_1_phong.cpp">
       <Filter>testCases\test_1</Filter>
     </ClCompile>
-    <ClCompile Include="test_2_shadow.cpp">
+    <ClCompile Include="testOCH.cpp">
+      <Filter>testCases\test_3</Filter>
+    </ClCompile>
+    <ClCompile Include="test_2_geometry.cpp">
       <Filter>testCases\test_2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\日志\日志.txt" />
     <Text Include="TodoList.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

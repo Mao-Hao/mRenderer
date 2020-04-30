@@ -2,15 +2,25 @@
 #include "mDevice.h"
 #include <Windows.h>
 
+Attrib attrib = {
+        false,
+        { false, true }
+};
+
+Attrib * getRenderAttrib()
+{
+    return &attrib;
+}
+
 static Mat viewport( int x, int y, int w, int h )
 {
     auto vp = Mat::identity();
-    vp[0][3] = x + w / 2.f;
-    vp[1][3] = y + h / 2.f;
-    vp[2][3] = 255.f / 2.f;
-    vp[0][0] = w / 2.f;
-    vp[1][1] = h / 2.f;
-    vp[2][2] = 255.f / 2.f;
+    vp[0][3] = x + w * 0.5f;
+    vp[1][3] = y + h * 0.5f;
+    vp[2][3] = ZFar * 0.5f;
+    vp[0][0] = w * 0.5f;
+    vp[1][1] = h * 0.5f;
+    vp[2][2] = vp[2][3];
     return vp;
 }
 
@@ -74,7 +84,7 @@ static inline bool isBackFace( std::array<Vec4f, 3> vertices )
     auto c = proj<3>( vertices[2] );
     auto ab = b - a;
     auto ac = c - a;
-    return (cross(ab, ac).z >= 0);
+    return ( attrib.culling.backFace ? cross( ab, ac ).z >= 0 : cross( ab, ac ).z < 0 );
 }
 
 // alis
@@ -131,16 +141,6 @@ void mRasterize( mShader * shader, int faceIndex )
     }
 }
 
-
-// 设计目的
-// 1. 需要增加阴影， mRasterize 实现困难。问题有关数据通信(shadowbuffer和shadowshader之间)
-// 2. 需要兼容多种渲染模式，比如线框，这需要不同的 mRasterize
-//      那么，如何获得不同版本的 mRasterize 呢？
-//          想法一，使用宏，将有区别的定义放到宏里面，编译器生成唯一的一个 mRasterize
-//          想法二，用函数指针，指向不同定义的 mRasterize
-//          想法三，用工厂类
-//          想法四，偏特化
-
 template <RenderMode M>
 void render( mModel * model, mShader * shader ) {}
 
@@ -150,8 +150,9 @@ void render<RenderMode::NORMAL>( mModel * model, mShader * shader )
     for ( int i = 0; i != model->facesSize(); i++ ) {
         shader->VertexShader( i );
         shader->GeometryShader();
-        if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   continue;
-        if ( isBackFace(PNTS) )     continue;
+        if ( attrib.clip )
+            if ( mClip( PNTS[0] ) || mClip( PNTS[1] ) || mClip( PNTS[2] ) )   continue;
+        if ( attrib.culling.status && isBackFace( PNTS ) )     continue;
 
         for ( auto & pnt : PNTS ) {
             pnt = vp * pnt;
@@ -167,14 +168,34 @@ void render<RenderMode::NORMAL>( mModel * model, mShader * shader )
         float Falpha = F( PNTS[1], PNTS[2], PNTS[0].x, PNTS[0].y );
         float Fbeta = F( PNTS[2], PNTS[0], PNTS[1].x, PNTS[1].y );
         float Fgamma = F( PNTS[0], PNTS[1], PNTS[2].x, PNTS[2].y );
+
+        float invFalpha = 1.0f / Falpha;
+        float invFbeta = 1.0f / Fbeta;
+        float invFgamma = 1.0f / Fgamma;
+
         float alpha, beta, gamma, z, w;
         mColor mc = White;
+
         for ( int y = ymin; y < ymax; y++ ) {
+
+            alpha = F( PNTS[1], PNTS[2], (int)xmin, y ) * invFalpha;  
+            float deltaAlphaX = F( PNTS[1], PNTS[2], (int)( xmin + 1 ), y ) * invFalpha - alpha;
+            alpha -= deltaAlphaX;
+
+            beta = F( PNTS[2], PNTS[0], (int)xmin, y ) * invFbeta;
+            float deltaBetaX = F( PNTS[2], PNTS[0], (int)( xmin + 1 ), y ) * invFbeta - beta;
+            beta -= deltaBetaX;
+
             for ( int x = xmin; x < xmax; x++ ) {
-                alpha = F( PNTS[1], PNTS[2], x, y ) / Falpha;
-                if ( alpha < 0 )                continue;   // 提前减枝
-                beta = F( PNTS[2], PNTS[0], x, y ) / Fbeta;
-                //gamma = F( PNTS[0], PNTS[1], x, y ) / Fgamma;
+                //alpha = F( PNTS[1], PNTS[2], x, y ) / Falpha;
+                alpha += deltaAlphaX;
+                if ( alpha < 0 ) {
+                    beta += deltaBetaX;
+                    continue;   // 提前减枝
+                }
+                //beta = F( PNTS[2], PNTS[0], x, y ) / Fbeta;
+                beta += deltaBetaX;
+
                 gamma = 1 - alpha - beta; // 存在误差
                 if ( beta < 0 || gamma < 0 )    continue;
                 if ( ( alpha > 0 || Falpha * F( PNTS[1], PNTS[2], -1, -1 ) )
@@ -184,7 +205,6 @@ void render<RenderMode::NORMAL>( mModel * model, mShader * shader )
                     w = PNTS[0].w * alpha + PNTS[1].w * beta + PNTS[2].w * gamma;
                     z *= w;
                     if ( mDevice::mZTest( x, y, z ) ) {
-                        // 矫正纹理（用的invW）
                         shader->uv = ( TEXS[0] * alpha * PNTS[0].w + TEXS[1] * beta * PNTS[1].w + TEXS[2] * gamma * PNTS[2].w ) / w;
                         if ( !shader->FrameShader( { alpha, beta, gamma }, mc ) ) {
                             mDevice::setPixel( x, y, mc );

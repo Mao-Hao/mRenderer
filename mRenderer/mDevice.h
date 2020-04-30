@@ -2,10 +2,11 @@
 #include "mBase.h"
 #include "mColor.h"
 #include <functional>
+#include <memory>
 
 const float ZNear = 0.1f;
 const float invZNear = 1.0f / ZNear;
-const float ZFar = 100.0f;
+const float ZFar = 255.0f;
 const float invZFar = 1.0f / ZFar;
 const float invDZFN = 1 / ( invZFar - invZNear );
 
@@ -64,7 +65,7 @@ public:
         mAssert( y >= 0 ); mAssert( y < height );
         #ifndef mNDebug
         if ( x >= 0 && x < width && y >= 0 && y < height )
-            #endif
+        #endif
             framebuffer[y][x] = c;
     }
 

@@ -1,7 +1,7 @@
 #include "mModel.h"
 
 #include <vector>
-
+#include <string>
 
 inline std::vector<mModel *> loadModels( const char * name )
 {
@@ -37,16 +37,28 @@ inline std::vector<mModel *> loadModels( const char * name )
         m->bindTexture( m->normalMap, "_nm.tga" );
         m->bindTexture( m->specularMap, "_spec.tga" );
         models.push_back( m );
+        m = new mModel( "obj/african_head/african_head_eye_outer.obj" );
+        m->bindTexture( m->diffuseMap, "_diffuse.tga" );
+        m->bindTexture( m->normalMap, "_nm.tga" );
+        m->bindTexture( m->specularMap, "_spec.tga" );
+        models.push_back( m );
     }
-    else if ( name == "box" ) {
+    else if ( name == "marble_box" ) {
         auto m = new mModel( "obj/box/box.obj" );
         m->bindTexture( m->diffuseMap, "_diff.tga" );
         models.push_back( m );
 
     }
-    else if ( name == "floor" ) {
-        auto m = new mModel( "obj/floor/floor.obj" );
-        m->bindTexture( m->diffuseMap, "_diffuse.tga" );
+    else if ( name == "wood_box" ) {
+        auto m = new mModel( "obj/wood_box/wood_box.obj" );
+        m->bindTexture( m->diffuseMap, "_diff.tga" );
+        models.push_back( m );
+
+    }
+    else if ( name == "brick_floor" ) {
+        auto m = new mModel( "obj/brick_floor/brick_floor.obj" );
+        m->bindTexture( m->diffuseMap, "_diff.tga" );
+        m->bindTexture( m->normalMap, "_nm.tga" );
         models.push_back( m );
 
     }

@@ -110,7 +110,7 @@ int mInitWindow()
     ReleaseDC( hwnd, hdc1 );
 
     BITMAPINFO bitmapinfo = { { sizeof( BITMAPINFOHEADER ), w, -h, 1, 32, BI_RGB, DWORD( w * h * 4 ), 0, 0, 0, 0 } };
-    bitmap0 = CreateDIBSection( memory_dc, &bitmapinfo, DIB_RGB_COLORS, _Out_ & ptr, 0, 0 );
+    bitmap0 = CreateDIBSection( memory_dc, &bitmapinfo, DIB_RGB_COLORS, & ptr, 0, 0 );
     if ( bitmap0 == NULL )      return -3;
 
     HBITMAP bitmap1 = (HBITMAP)SelectObject( memory_dc, bitmap0 );   // 新的0给旧的1

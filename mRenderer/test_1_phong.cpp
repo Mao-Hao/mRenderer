@@ -2,7 +2,6 @@
 #include "mDevice.h"
 #include "mMath.hpp"
 #include "mColor.h"
-#include "mPoint.h"
 #include "mVertex.h"
 #include "mPaint.h"
 #include "mFPSCamera.h"
@@ -28,7 +27,9 @@ int test_1_phong( int argc, char * argv[] )
     Shader_1_phong * shader = new Shader_1_phong;
 
     vector<mModel *> models = loadModels("assassin");
-    //vector<mModel *> models = loadModels( "box" );
+
+    getRenderAttrib()->culling.status = true;
+
     float prev = (float)mGetNativeTime();
     while ( !mDevice::isKeyPressed( KeyCode::ESC ) ) {
         float curr = (float)mGetNativeTime();
@@ -48,6 +49,7 @@ int test_1_phong( int argc, char * argv[] )
         for ( auto & model : models ) {
             shader->setModel( model );
             render<RenderMode::NORMAL>(model, shader);
+            //render<RenderMode::POINTS>(model, shader);
 
         }
 
